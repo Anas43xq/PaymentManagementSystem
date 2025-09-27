@@ -25,17 +25,17 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.panelMain = new System.Windows.Forms.Panel();
             this.dgvUniversityPayments = new System.Windows.Forms.DataGridView();
-            this.panelBottom = new System.Windows.Forms.Panel();
-            this.lblTotalLBP = new System.Windows.Forms.Label();
-            this.lblTotalUSD = new System.Windows.Forms.Label();
             this.CMSPayment = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panelBottom = new System.Windows.Forms.Panel();
+            this.lblTotalLBP = new System.Windows.Forms.Label();
+            this.lblTotalUSD = new System.Windows.Forms.Label();
             this.panelTop.SuspendLayout();
             this.panelMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUniversityPayments)).BeginInit();
-            this.panelBottom.SuspendLayout();
             this.CMSPayment.SuspendLayout();
+            this.panelBottom.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTop
@@ -148,6 +148,29 @@
             this.dgvUniversityPayments.TabIndex = 0;
             this.dgvUniversityPayments.SelectionChanged += new System.EventHandler(this.dataGridViewUniversityPayments_SelectionChanged);
             // 
+            // CMSPayment
+            // 
+            this.CMSPayment.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.CMSPayment.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editToolStripMenuItem,
+            this.deleteToolStripMenuItem});
+            this.CMSPayment.Name = "contextMenuStrip1";
+            this.CMSPayment.Size = new System.Drawing.Size(123, 52);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(122, 24);
+            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(122, 24);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // panelBottom
             // 
             this.panelBottom.BackColor = System.Drawing.SystemColors.Control;
@@ -185,29 +208,6 @@
             this.lblTotalUSD.TabIndex = 0;
             this.lblTotalUSD.Text = "Total USD: $0.00";
             // 
-            // CMSPayment
-            // 
-            this.CMSPayment.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.CMSPayment.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editToolStripMenuItem,
-            this.deleteToolStripMenuItem});
-            this.CMSPayment.Name = "contextMenuStrip1";
-            this.CMSPayment.Size = new System.Drawing.Size(123, 52);
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.editToolStripMenuItem.Text = "Edit";
-            this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
-            this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
             // UniversityPaymentsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -223,9 +223,9 @@
             this.panelTop.ResumeLayout(false);
             this.panelMain.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvUniversityPayments)).EndInit();
+            this.CMSPayment.ResumeLayout(false);
             this.panelBottom.ResumeLayout(false);
             this.panelBottom.PerformLayout();
-            this.CMSPayment.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

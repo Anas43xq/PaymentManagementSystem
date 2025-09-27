@@ -82,6 +82,11 @@ namespace PaymentBusinessLayer
             return clsPaymentRepo.GetAllCategories();
         }
 
+        public static DataTable GetCategories(string[] Collection, bool University = true)
+        {
+            return clsPaymentRepo.GetCategories(Collection, University);
+        }
+
         public static int GetCategoryIDByName(string categoryName)
         {
             return clsPaymentRepo.GetCategoryIDByName(categoryName);

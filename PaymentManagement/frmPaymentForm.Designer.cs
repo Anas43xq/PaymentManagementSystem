@@ -176,7 +176,6 @@
             this.txtAmount.Name = "txtAmount";
             this.txtAmount.Size = new System.Drawing.Size(265, 26);
             this.txtAmount.TabIndex = 1;
-            this.txtAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.txtAmount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtAmount_KeyPress);
             // 
             // lblAmount
@@ -207,7 +206,8 @@
             this.groupBoxBasicInfo.Size = new System.Drawing.Size(786, 299);
             this.groupBoxBasicInfo.TabIndex = 0;
             this.groupBoxBasicInfo.TabStop = false;
-            this.groupBoxBasicInfo.Text = "Basic Information";            // 
+            this.groupBoxBasicInfo.Text = "Basic Information";
+            // 
             // cmbCategory
             // 
             this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;

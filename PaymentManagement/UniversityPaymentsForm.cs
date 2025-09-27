@@ -41,6 +41,7 @@ namespace PaymentManagement
 
             // Set alternating row colors
             dgvUniversityPayments.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
         }
 
         private void LoadData()
@@ -103,7 +104,6 @@ namespace PaymentManagement
             LoadData();
 
         }
-
         private void btnEdit_Click(object sender, EventArgs e)
         {
             if (dgvUniversityPayments.SelectedRows.Count > 0)
@@ -124,8 +124,6 @@ namespace PaymentManagement
             }
         }
 
-
-
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (dgvUniversityPayments.SelectedRows.Count > 0)
@@ -145,12 +143,11 @@ namespace PaymentManagement
                         MessageBox.Show("Failed to delete the payment.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-  
             }
             else
             {
                 MessageBox.Show("Please select a payment to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }-
+            }
         }
         private void dataGridViewUniversityPayments_SelectionChanged(object sender, EventArgs e)
         {

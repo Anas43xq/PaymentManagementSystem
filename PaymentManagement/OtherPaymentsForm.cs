@@ -28,7 +28,6 @@ namespace PaymentManagement
 
         private void SetupDataGridView()
         {
-            // Configure DataGridView appearance
             dgvOtherPayments.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvOtherPayments.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvOtherPayments.MultiSelect = false;
@@ -37,59 +36,75 @@ namespace PaymentManagement
             dgvOtherPayments.AllowUserToDeleteRows = false;
             dgvOtherPayments.RowHeadersVisible = false;
 
-            // Set alternating row colors
             dgvOtherPayments.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
         }
 
         private void SetupFilters()
         {
-            // Add filter options for purposes
             cmbPurposeFilter.Items.Clear();
-            cmbPurposeFilter.Items.Add("All Purposes");
-            cmbPurposeFilter.Items.Add("Medical");
-            cmbPurposeFilter.Items.Add("Mobile");
-            cmbPurposeFilter.Items.Add("Transportation");
-            cmbPurposeFilter.Items.Add("Food");
-            cmbPurposeFilter.Items.Add("Utilities");
-            cmbPurposeFilter.Items.Add("Other");
 
-            cmbPurposeFilter.SelectedIndex = 0;
+            DataTable dt = clsPaymentServices.GetCategories(clsPaymentServices.GetUniversityCategories(), false);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                cmbPurposeFilter.Items.Add(row["Name"].ToString());
+            }
+
+            if (cmbPurposeFilter.Items.Count > 0)
+                cmbPurposeFilter.SelectedIndex = 0;
         }
 
-        private void LoadData()
+        private void LoadData(string SpecficCategory = "")
         {
             string[] OtherCategory = clsPaymentServices.GetUniversityCategories();
+            DataTable dt = new DataTable();
 
-            DataTable dt = clsPaymentServices.GetTransactionsByCategory(OtherCategory,false);
+            if (!string.IsNullOrEmpty(SpecficCategory))
+            {
 
-            dt.Columns["FormattedAmount"].ReadOnly = false;
+                OtherCategory = new string[] { SpecficCategory };
+                dt = clsPaymentServices.GetTransactionsByCategory(OtherCategory);
+            }
+            else
+            {
+                dt = clsPaymentServices.GetTransactionsByCategory(OtherCategory, false);
+            }
+
+            if (dt.Columns.Contains("FormattedAmount"))
+                dt.Columns["FormattedAmount"].ReadOnly = false;
 
             foreach (DataRow row in dt.Rows)
             {
                 string amountStr = row["FormattedAmount"].ToString();
-
-                string numberStr = amountStr.Substring(3).Trim();
-
-                numberStr = numberStr.Replace(",", "");
-
-                if (decimal.TryParse(numberStr, out decimal amount))
+                if (amountStr.Length > 3)
                 {
-                    string currency = row["CurrencyCode"].ToString();
-
-                    if (currency == "LBP")
-                        row["FormattedAmount"] = "LBP " + amount.ToString("N2");
+                    string numberStr = amountStr.Substring(3).Trim().Replace(",", "");
+                    if (decimal.TryParse(numberStr, out decimal amount))
+                    {
+                        string currency = row["CurrencyCode"].ToString();
+                        if (currency == "LBP")
+                            row["FormattedAmount"] = "LBP " + amount.ToString("N2");
+                    }
                 }
             }
-
 
             dgvOtherPayments.DataSource = dt;
         }
 
-        private void UpdateTotals()
+        private void UpdateTotals(string SpecficCategory = "")
         {
-            string[] UniversityCategory = clsPaymentServices.GetUniversityCategories();
+            string[] OtherCategory = clsPaymentServices.GetUniversityCategories();
+            DataTable dt = new DataTable();
 
-            DataTable dt = clsPaymentServices.GetTotalsByCategoriesID(UniversityCategory,false);
+            if (!string.IsNullOrEmpty(SpecficCategory))
+            {
+                OtherCategory = new string[] { SpecficCategory };
+                dt = clsPaymentServices.GetTotalsByCategoriesID(OtherCategory);
+            }
+            else
+            {
+                dt = clsPaymentServices.GetTotalsByCategoriesID(OtherCategory, false);
+            }
 
             decimal totalUSD = 0;
             decimal totalLBP = 0;
@@ -99,17 +114,18 @@ namespace PaymentManagement
                 string currency = row["Code"].ToString();
 
                 if (currency == "USD")
-                    totalUSD = Convert.ToDecimal(row["TotalAmount"]);
+                    totalUSD += Convert.ToDecimal(row["TotalAmount"]);
                 else if (currency == "LBP")
-                    totalLBP = Convert.ToDecimal(row["TotalAmount"]);
+                    totalLBP += Convert.ToDecimal(row["TotalAmount"]);
             }
+
             lblTotalUSD.Text = $"Total USD: ${totalUSD:N2}";
             lblTotalLBP.Text = $"Total LBP: {totalLBP:N0} LBP";
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            frmPaymentForm paymentForm = new frmPaymentForm(frmPaymentForm.enFormMode.Add,-1);
+            frmPaymentForm paymentForm = new frmPaymentForm(frmPaymentForm.enFormMode.Add, -1);
 
             paymentForm.ShowDialog();
 
@@ -175,14 +191,16 @@ namespace PaymentManagement
 
         private void cmbPurposeFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // TODO: Filter data based on selected purpose
-            LoadData();
-            UpdateTotals();
+            string Category = cmbPurposeFilter.SelectedItem.ToString();
+            LoadData(Category);
+            UpdateTotals(Category);
         }
 
         private void btnClearFilter_Click(object sender, EventArgs e)
         {
             cmbPurposeFilter.SelectedIndex = 0;
+
+            btnRefresh_Click(sender,e);
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)

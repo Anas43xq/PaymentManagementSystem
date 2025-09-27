@@ -452,6 +452,33 @@ namespace PaymentDataLayer
             }
         }
 
+        public static DataTable GetCategories(string [] Collection, bool University = true) 
+        {
+            using (SqlConnection conn = new SqlConnection(clsRepoSettings.ConnectionString))
+            {
+                if (Collection == null || Collection.Length == 0)
+                    return new DataTable();
+                var paramNames = Collection.Select((c, i) => $"@cat{i}").ToArray();
+                string sql = $@"
+               SELECT Name
+               FROM Categories
+               WHERE Name {(University ? "" : "NOT")} IN ({string.Join(",", paramNames)})
+               ORDER BY Name;";
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    for (int i = 0; i < Collection.Length; i++)
+                        cmd.Parameters.AddWithValue(paramNames[i], Collection[i]);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        DataTable dt = new DataTable();
+                        dt.Load(reader);
+                        return dt;
+                    }
+                }
+            }
+        }
+
         #endregion
     }
 }
