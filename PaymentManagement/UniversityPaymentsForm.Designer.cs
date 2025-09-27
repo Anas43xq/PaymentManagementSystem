@@ -17,6 +17,7 @@
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelTop = new System.Windows.Forms.Panel();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
@@ -27,10 +28,14 @@
             this.panelBottom = new System.Windows.Forms.Panel();
             this.lblTotalLBP = new System.Windows.Forms.Label();
             this.lblTotalUSD = new System.Windows.Forms.Label();
+            this.CMSPayment = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelTop.SuspendLayout();
             this.panelMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvUniversityPayments)).BeginInit();
             this.panelBottom.SuspendLayout();
+            this.CMSPayment.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTop
@@ -132,6 +137,7 @@
             this.dgvUniversityPayments.BackgroundColor = System.Drawing.Color.White;
             this.dgvUniversityPayments.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvUniversityPayments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvUniversityPayments.ContextMenuStrip = this.CMSPayment;
             this.dgvUniversityPayments.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvUniversityPayments.GridColor = System.Drawing.SystemColors.ControlDarkDark;
             this.dgvUniversityPayments.Location = new System.Drawing.Point(13, 0);
@@ -179,6 +185,29 @@
             this.lblTotalUSD.TabIndex = 0;
             this.lblTotalUSD.Text = "Total USD: $0.00";
             // 
+            // CMSPayment
+            // 
+            this.CMSPayment.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.CMSPayment.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editToolStripMenuItem,
+            this.deleteToolStripMenuItem});
+            this.CMSPayment.Name = "contextMenuStrip1";
+            this.CMSPayment.Size = new System.Drawing.Size(123, 52);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // UniversityPaymentsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -196,6 +225,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvUniversityPayments)).EndInit();
             this.panelBottom.ResumeLayout(false);
             this.panelBottom.PerformLayout();
+            this.CMSPayment.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -212,5 +242,8 @@
         private System.Windows.Forms.Label lblTotalLBP;
         private System.Windows.Forms.Label lblTotalUSD;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.ContextMenuStrip CMSPayment;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
     }
 }

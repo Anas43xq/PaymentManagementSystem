@@ -145,11 +145,12 @@ namespace PaymentManagement
                         MessageBox.Show("Failed to delete the payment.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                else
-                {
-                    MessageBox.Show("Please select a payment to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
+  
             }
+            else
+            {
+                MessageBox.Show("Please select a payment to delete.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }-
         }
         private void dataGridViewUniversityPayments_SelectionChanged(object sender, EventArgs e)
         {
@@ -164,5 +165,14 @@ namespace PaymentManagement
             UpdateTotals();
         }
 
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            btnEdit_Click(sender, e);
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            btnDelete_Click(sender, e);
+        }
     }
 }
