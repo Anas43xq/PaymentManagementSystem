@@ -8,15 +8,15 @@ A comprehensive Windows Forms application for managing payment transactions, cat
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Database Schema](#database-schema)
-- [Contributing](#contributing)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Architecture](#️-architecture)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Project Structure](#-project-structure)
+- [Database Schema](#️-database-schema)
+- [Contributing](#-contributing)
 
 ## 🎯 Overview
 
