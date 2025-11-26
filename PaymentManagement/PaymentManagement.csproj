@@ -12,6 +12,23 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\Projects\Payment_Management\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,9 +49,22 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>7A4CA0398CE6E59EEC748587A6159BDA80301B04</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>PaymentManagement_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,42 +76,79 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="frmPaymentForm.cs">
+    <Compile Include="Helpers\CurrencyConverter.cs" />
+    <Compile Include="Helpers\ExcelHelper.cs" />
+    <Compile Include="Helpers\UIHelper.cs" />
+    <Compile Include="Themes\ThemeManager.cs" />
+    <Compile Include="Forms\Base\BasePaymentForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPaymentForm.Designer.cs">
+    <Compile Include="Forms\Base\BasePaymentForm.Designer.cs">
+      <DependentUpon>BasePaymentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Payment\Entry\frmPaymentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Payment\Entry\frmPaymentForm.Designer.cs">
       <DependentUpon>frmPaymentForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm .cs">
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm .Designer.cs">
-      <DependentUpon>MainForm .cs</DependentUpon>
-    </Compile>
-    <Compile Include="CoursesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CoursesForm.Designer.cs">
-      <DependentUpon>CoursesForm.cs</DependentUpon>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OtherPaymentsForm.cs">
+    <Compile Include="Forms\Payment\List\OtherPaymentsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OtherPaymentsForm.Designer.cs">
+    <Compile Include="Forms\Payment\List\OtherPaymentsForm.Designer.cs">
       <DependentUpon>OtherPaymentsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UniversityPaymentsForm.cs">
+    <Compile Include="Forms\Reports\ReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UniversityPaymentsForm.Designer.cs">
+    <Compile Include="Forms\Reports\ReportForm.Designer.cs">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Payment\List\UniversityPaymentsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Payment\List\UniversityPaymentsForm.Designer.cs">
       <DependentUpon>UniversityPaymentsForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="frmPaymentForm.resx">
+    <Compile Include="Forms\Settings\CategoryManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Settings\CategoryManagementForm.Designer.cs">
+      <DependentUpon>CategoryManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Settings\CategoryEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Settings\CategoryEditForm.Designer.cs">
+      <DependentUpon>CategoryEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Settings\CurrencyManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Settings\CurrencyManagementForm.Designer.cs">
+      <DependentUpon>CurrencyManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Settings\CurrencyEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Settings\CurrencyEditForm.Designer.cs">
+      <DependentUpon>CurrencyEditForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Forms\Payment\Entry\frmPaymentForm.resx">
       <DependentUpon>frmPaymentForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OtherPaymentsForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Payment\List\OtherPaymentsForm.resx">
       <DependentUpon>OtherPaymentsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -93,9 +160,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UniversityPaymentsForm.resx">
+    <EmbeddedResource Include="Forms\Reports\ReportForm.resx">
+      <DependentUpon>ReportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Payment\List\UniversityPaymentsForm.resx">
       <DependentUpon>UniversityPaymentsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="PaymentManagement_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -118,6 +189,18 @@
       <Project>{368207d1-4e7c-438d-a417-304359208635}</Project>
       <Name>PaymentBusinessLayer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

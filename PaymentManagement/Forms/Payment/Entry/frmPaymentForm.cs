@@ -33,8 +33,23 @@ namespace PaymentManagement
             _PaymentID = PaymentID;
         }
 
+        private decimal _combinedAmount = 0;
+        private string _combinedNotes = "";
+        private bool _isCombinedPayment = false;
+
+        /// <summary>
+        /// Sets the form to display combined payment data
+        /// </summary>
+        public void SetCombinedPayment(decimal totalAmountUSD, string notes)
+        {
+            _isCombinedPayment = true;
+            _combinedAmount = totalAmountUSD;
+            _combinedNotes = notes;
+        }
+
         private void PaymentForm_Load(object sender, EventArgs e)
         {
+            ThemeManager.ApplyTheme(this);
             SetupForm();
             SetupComboBoxes();
             SetupDatePickers();
@@ -50,6 +65,15 @@ namespace PaymentManagement
                 }
             }
 
+            // Apply combined payment values if this is a combined transaction
+            if (_isCombinedPayment)
+            {
+                txtAmount.Text = _combinedAmount.ToString();
+                cmbCurrency.Text = PaymentConstants.Currencies.USD;
+                txtNotes.Text = _combinedNotes;
+                this.Text = "Add Combined Payment";
+            }
+
         }
 
         private void SetupForm()
@@ -63,7 +87,6 @@ namespace PaymentManagement
             if(_formMode == enFormMode.Edit)
             {
                 txtAmount.Text = payment.Amount.ToString();
-                txtDescription.Text = payment.Description;
                 dtpPaymentDate.Value = payment.TransactionDate;
                 txtNotes.Text = payment.Notes;
                 cmbCurrency.SelectedItem = payment.CurrencyCode;
@@ -124,7 +147,6 @@ namespace PaymentManagement
             if (ValidateForm())
             {
                 payment.Amount = Convert.ToDecimal(txtAmount.Text);
-                payment.Description = txtDescription.Text;
                 payment.TransactionDate = dtpPaymentDate.Value;
                 payment.Notes = txtNotes.Text;
                 payment.CurrencyID = clsPaymentServices.GetCurrencyIDByCode(cmbCurrency.SelectedItem.ToString());
@@ -149,14 +171,6 @@ namespace PaymentManagement
 
         private bool ValidateForm()
         {
-            // Basic validation
-            if (string.IsNullOrWhiteSpace(txtDescription.Text))
-            {
-                MessageBox.Show("Please enter a description.", "Validation Error",
-                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtDescription.Focus();
-                return false;
-            }
 
             if (string.IsNullOrWhiteSpace(txtAmount.Text))
             {
@@ -187,22 +201,55 @@ namespace PaymentManagement
 
         private void txtAmount_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Allow only numbers, decimal point, and backspace
+            char key = char.ToUpper(e.KeyChar);
+            var currencyMap = new Dictionary<char, string>
+            {
+                {'U',"USD"},
+                {'A',"AED"},
+                {'L',"LBP"}
+            };
+
+            if (currencyMap.TryGetValue(key, out string currency))
+            {
+                cmbCurrency.SelectedItem = currency;
+                e.Handled = true;
+            }
+            
+            // Allow: digits, control keys (backspace, delete), and decimal point
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
             {
                 e.Handled = true;
             }
 
-            // Only allow one decimal point
-            if (e.KeyChar == '.' && ((TextBox)sender).Text.IndexOf('.') > -1)
+            // Allow only one decimal point
+            if (e.KeyChar == '.' && ((TextBox)sender).Text.Contains("."))
             {
                 e.Handled = true;
             }
         }
 
+        private void txtAmount_TextChanged(object sender, EventArgs e)
+        {
+            if (txtAmount.Text == string.Empty) return;
+
+            int selectionStart = txtAmount.SelectionStart;
+            int selectionLength = txtAmount.SelectionLength;
+
+            string cleanText = txtAmount.Text.Replace(",", "");
+            if (decimal.TryParse(cleanText, out decimal value))
+            {
+                txtAmount.TextChanged -= txtAmount_TextChanged; // prevent recursion
+                txtAmount.Text = string.Format("{0:N2}", value); // "N2" = comma-separated with 2 decimal places
+                txtAmount.SelectionStart = Math.Min(selectionStart + 1, txtAmount.Text.Length);
+                txtAmount.SelectionLength = selectionLength;
+                txtAmount.TextChanged += txtAmount_TextChanged;
+            }
+        }
+
+
         private void cmbCurrency_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Update currency symbol in amount label
+
             string CurrencyCode = cmbCurrency.SelectedItem.ToString();
 
             lblAmount.Text = "Amount (";

@@ -46,12 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoursesControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CoursesControl.Designer.cs">
-      <DependentUpon>CoursesControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

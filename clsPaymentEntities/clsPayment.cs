@@ -12,7 +12,6 @@ namespace clsPaymentEntities
         public int ID { get; set; }
 
         // Basic transaction info
-        public string Description { get; set; }
         public decimal Amount { get; set; }  // Fixed: Should be decimal for money
         public DateTime TransactionDate { get; set; }
         public string Notes { get; set; }
@@ -62,8 +61,8 @@ namespace clsPaymentEntities
     public class ClsCurrency
     {
         public int ID { get; set; }
-        public string Code { get; set; }        // USD, EUR, AED
-        public string Name { get; set; }        // US Dollar, Euro
+        public string Code { get; set; }        // USD, LBP, AED
+        public string Name { get; set; }        // US Dollar, Lebanese Pound, UAE Dirham
         public string Symbol { get; set; }      // $, €, د.إ
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
