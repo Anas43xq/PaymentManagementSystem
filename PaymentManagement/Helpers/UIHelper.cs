@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace PaymentManagement
@@ -15,6 +16,15 @@ namespace PaymentManagement
 
     internal static class DataGridViewExtensions
     {
+        /*
+          Double buffering means:
+
+         Draw everything in memory first
+         
+         Then paint it to the screen in one step
+         → This removes flicker and makes it smooth.
+        */
+
         public static void DoubleBuffered(this DataGridView dgv, bool setting)
         {
             Type dgvType = dgv.GetType();
@@ -25,7 +35,7 @@ namespace PaymentManagement
 
     internal static class UIHelper
     {
-        internal static DataTable LoadData(PageContext context, string specificCategory = "")
+        internal static DataTable LoadData(PageContext context, int userId, string specificCategory = "")
         {
             string[] categories = clsPaymentServices.GetUniversityCategories();
             DataTable dt;
@@ -34,16 +44,16 @@ namespace PaymentManagement
             {
                 categories = new string[] { specificCategory };
 
-                dt = clsPaymentServices.GetTransactionsByCategory(categories);
+                dt = clsPaymentServices.GetTransactionsByCategory(categories, userId, true);
             }
 
             else if (context == PageContext.University)
             {
-                dt = clsPaymentServices.GetTransactionsByCategory(categories);
+                dt = clsPaymentServices.GetTransactionsByCategory(categories, userId, true);
             }
             else if (context == PageContext.Other)
             {
-                dt = clsPaymentServices.GetTransactionsByCategory(categories, false);
+                dt = clsPaymentServices.GetTransactionsByCategory(categories, userId, false);
             }
             else
             {
@@ -57,22 +67,26 @@ namespace PaymentManagement
             foreach (DataRow row in dt.Rows)
             {
                 string amountStr = row["FormattedAmount"].ToString();
-                if (amountStr.Length > 3)
+
+                // only digits, dots, and commas
+                string numberStr = Regex.Replace(amountStr, @"[^\d,.]", "").Replace(",", "");
+
+                if (decimal.TryParse(numberStr, out decimal amount))
                 {
-                    string numberStr = amountStr.Substring(3).Trim().Replace(",", "");
-                    if (decimal.TryParse(numberStr, out decimal amount))
-                    {
-                        string currency = row["CurrencyCode"].ToString();
-                        if (currency == PaymentConstants.Currencies.LBP)
-                            row["FormattedAmount"] = PaymentConstants.Currencies.LBP + " " + amount.ToString("N2");
-                    }
+                    string currency = row["CurrencyCode"].ToString();
+                    if (currency == PaymentConstants.Currencies.LBP)
+                        row["FormattedAmount"] = PaymentConstants.Currencies.LBP + " " + amount.ToString("N0");
+                    else if (currency == PaymentConstants.Currencies.USD)
+                        row["FormattedAmount"] = PaymentConstants.Currencies.USD + " " + amount.ToString("N2");
+                    else if (currency == PaymentConstants.Currencies.AED)
+                        row["FormattedAmount"] = PaymentConstants.Currencies.AED + " " + amount.ToString("N2");
                 }
             }
 
             return dt;
         }
 
-        internal static void UpdateTotals(PageContext context, Label LBP, Label AED, Label USD, string specificCategory = "")
+        internal static void UpdateTotals(PageContext context, int userId, Label LBP, Label AED, Label USD, string specificCategory = "")
         {
             string[] categories = clsPaymentServices.GetUniversityCategories();
             DataTable dt;
@@ -86,16 +100,16 @@ namespace PaymentManagement
             {
                 categories = new string[] { specificCategory };
 
-              dt = clsPaymentServices.GetTotalsByCategories(categories);
+                dt = clsPaymentServices.GetTotalsByCategories(categories, userId, true);
             }
 
             else if (context == PageContext.University)
             {
-                dt = clsPaymentServices.GetTotalsByCategories(categories);
+                dt = clsPaymentServices.GetTotalsByCategories(categories, userId, true);
             }
             else if (context == PageContext.Other)
             {
-                dt = clsPaymentServices.GetTotalsByCategories(categories, false);
+                dt = clsPaymentServices.GetTotalsByCategories(categories, userId, false);
             }
             else
             {
@@ -135,7 +149,7 @@ namespace PaymentManagement
                 dgv.AllowUserToDeleteRows = false;
                 dgv.RowHeadersVisible = false;
                 dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
-                
+
                 dgv.DoubleBuffered(true);
                 dgv.EnableHeadersVisualStyles = false;
                 dgv.CellBorderStyle = DataGridViewCellBorderStyle.Single;
@@ -147,19 +161,21 @@ namespace PaymentManagement
             }
         }
 
-        internal static void btnAdd_Click(PageContext context, DataGridView dgv, Label LBP, Label AED, Label USD, string specificCategory = "")
+        internal static void btnAdd_Click(PageContext context, int userId, DataGridView dgv, Label LBP, Label AED, Label USD, string specificCategory = "")
         {
             using (frmPaymentForm form = new frmPaymentForm(frmPaymentForm.enFormMode.Add, -1))
             {
+                form.UserID = userId;
+
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    dgv.DataSource = LoadData(context, specificCategory);
-                    UpdateTotals(context, LBP, AED, USD, specificCategory);
+                    dgv.DataSource = LoadData(context, userId, specificCategory);
+                    UpdateTotals(context, userId, LBP, AED, USD, specificCategory);
                 }
             }
         }
 
-        internal static void btnEdit_Click(PageContext context, DataGridView dgv, Label LBP, Label AED, Label USD, string specificCategory = "")
+        internal static void btnEdit_Click(PageContext context, int userId, DataGridView dgv, Label LBP, Label AED, Label USD, string specificCategory = "")
         {
             if (dgv.SelectedRows.Count != 1)
             {
@@ -170,15 +186,17 @@ namespace PaymentManagement
             int transactionID = Convert.ToInt32(dgv.SelectedRows[0].Cells["ID"].Value);
             using (frmPaymentForm form = new frmPaymentForm(frmPaymentForm.enFormMode.Edit, transactionID))
             {
+                form.UserID = userId;
+
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    dgv.DataSource = LoadData(context, specificCategory);
-                    UpdateTotals(context, LBP, AED, USD, specificCategory);
+                    dgv.DataSource = LoadData(context, userId, specificCategory);
+                    UpdateTotals(context, userId, LBP, AED, USD, specificCategory);
                 }
             }
         }
 
-        internal static void btnDelete_Click(PageContext context, DataGridView dgv, Label LBP, Label AED, Label USD, string specificCategory = "")
+        internal static void btnDelete_Click(PageContext context, int userId, DataGridView dgv, Label LBP, Label AED, Label USD, string specificCategory = "")
         {
             if (dgv.SelectedRows.Count == 0)
             {
@@ -190,10 +208,10 @@ namespace PaymentManagement
             if (result != DialogResult.Yes) return;
 
             int transactionID = Convert.ToInt32(dgv.SelectedRows[0].Cells["ID"].Value);
-            if (clsPaymentServices.DeletePayment(transactionID))
+            if (clsPaymentServices.DeletePayment(transactionID, userId))
             {
-                dgv.DataSource = LoadData(context, specificCategory);
-                UpdateTotals(context, LBP, AED, USD, specificCategory);
+                dgv.DataSource = LoadData(context, userId, specificCategory);
+                UpdateTotals(context, userId, LBP, AED, USD, specificCategory);
                 MessageBox.Show(PaymentConstants.Messages.DeleteSuccess, PaymentConstants.DialogTitles.Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -202,7 +220,7 @@ namespace PaymentManagement
             }
         }
 
-         internal static void DatePickerFilter(DateTimePicker DTP, DataGridView dgv)
+        internal static void DatePickerFilter(DateTimePicker DTP, DataGridView dgv, int userId)
         {
             if (DTP.Value == null) return;
 
@@ -211,7 +229,7 @@ namespace PaymentManagement
 
             try
             {
-                DataTable dt = clsPaymentServices.FilterTransactionByDate(dateString);
+                DataTable dt = clsPaymentServices.FilterTransactionByDate(dateString, userId);
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     dgv.DataSource = dt;
@@ -231,10 +249,8 @@ namespace PaymentManagement
             }
         }
 
-        /// <summary>
-        /// Combines multiple selected transactions and opens payment form with total in USD
-        /// </summary>
-        internal static void CombineTransactions(DataGridView dgv)
+
+        internal static void CombineTransactions(DataGridView dgv, int userId)
         {
             if (dgv.SelectedRows.Count < 2)
             {
@@ -281,46 +297,43 @@ namespace PaymentManagement
             {
                 using (frmPaymentForm form = new frmPaymentForm(frmPaymentForm.enFormMode.Add, -1))
                 {
+                    form.UserID = userId;
                     form.SetCombinedPayment(totalUSD, notes);
-                    
+
                     if (form.ShowDialog() == DialogResult.OK)
                     {
                         int deletedCount = 0;
                         foreach (int id in transactionIDs)
                         {
-                            if (clsPaymentServices.DeletePayment(id))
+                            if (clsPaymentServices.DeletePayment(id, userId))
                             {
                                 deletedCount++;
                             }
                         }
-                        
-                        MessageBox.Show($"Successfully combined {transactionCount} transactions.\n{deletedCount} original transactions deleted.", 
+
+                        MessageBox.Show($"Successfully combined {transactionCount} transactions.\n{deletedCount} original transactions deleted.",
                             "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Toggles dark/light theme for the application
-        /// </summary>
+
         internal static void ToggleTheme(Form form)
         {
             ThemeManager.ToggleTheme();
             ThemeManager.ApplyTheme(form);
         }
 
-        /// <summary>
-        /// Styles total labels with colorful design
-        /// </summary>
+
         internal static void StyleTotalLabels(Label lblTotalLBP, Label lblTotalAED, Label lblTotalUSD)
         {
             lblTotalLBP.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblTotalLBP.ForeColor = Color.FromArgb(142, 68, 173);
-            
+
             lblTotalAED.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblTotalAED.ForeColor = Color.FromArgb(230, 126, 34);
-            
+
             lblTotalUSD.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblTotalUSD.ForeColor = Color.FromArgb(39, 174, 96);
         }

@@ -24,6 +24,7 @@
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.btnCategoryManagement = new System.Windows.Forms.Button();
             this.btnCurrencyManagement = new System.Windows.Forms.Button();
+            this.btnLogout = new System.Windows.Forms.Button();
             this.panelSettingsMenu = new System.Windows.Forms.Panel();
             this.tabControlMain.SuspendLayout();
             this.tabPageSettings.SuspendLayout();
@@ -95,6 +96,7 @@
             // panelSettingsMenu
             // 
             this.panelSettingsMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.panelSettingsMenu.Controls.Add(this.btnLogout);
             this.panelSettingsMenu.Controls.Add(this.btnCurrencyManagement);
             this.panelSettingsMenu.Controls.Add(this.btnCategoryManagement);
             this.panelSettingsMenu.Dock = System.Windows.Forms.DockStyle.Left;
@@ -135,6 +137,22 @@
             this.btnCurrencyManagement.UseVisualStyleBackColor = false;
             this.btnCurrencyManagement.Click += new System.EventHandler(this.btnCurrencyManagement_Click);
             // 
+            // btnLogout
+            // 
+            this.btnLogout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(57)))), ((int)(((byte)(43)))));
+            this.btnLogout.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnLogout.FlatAppearance.BorderSize = 0;
+            this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLogout.Font = new System.Drawing.Font("Segoe UI Semibold", 11F, System.Drawing.FontStyle.Bold);
+            this.btnLogout.ForeColor = System.Drawing.Color.White;
+            this.btnLogout.Location = new System.Drawing.Point(20, 750);
+            this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Size = new System.Drawing.Size(210, 50);
+            this.btnLogout.TabIndex = 2;
+            this.btnLogout.Text = "🚪 Logout";
+            this.btnLogout.UseVisualStyleBackColor = false;
+            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -166,5 +184,6 @@
         private System.Windows.Forms.Panel panelSettingsMenu;
         private System.Windows.Forms.Button btnCategoryManagement;
         private System.Windows.Forms.Button btnCurrencyManagement;
+        private System.Windows.Forms.Button btnLogout;
     }
 }

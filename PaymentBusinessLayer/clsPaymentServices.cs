@@ -9,9 +9,6 @@ namespace PaymentBusinessLayer
     {
         #region Validation
 
-        /// <summary>
-        /// Validates payment data before save
-        /// </summary>
         private static bool ValidatePayment(ClsPayment payment, out string errorMessage)
         {
             errorMessage = string.Empty;
@@ -49,9 +46,6 @@ namespace PaymentBusinessLayer
             return true;
         }
 
-        /// <summary>
-        /// Validates date string for filtering
-        /// </summary>
         private static bool ValidateDate(string date, out string errorMessage)
         {
             errorMessage = string.Empty;
@@ -73,12 +67,65 @@ namespace PaymentBusinessLayer
 
         #endregion
 
+        #region Authentication / User Management
+
+        public static bool RegisterUser(string username, string email, string password, string roleName = "User")
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Username cannot be empty.");
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                throw new ArgumentException("Password must be at least 8 characters long.");
+
+            if (!string.IsNullOrWhiteSpace(email) && !email.Contains("@"))
+                throw new ArgumentException("Email is not in a valid format.");
+
+
+            var existing = PaymentDataLayer.clsPaymentRepo.GetUserByUsername(username);
+            if (existing != null)
+                throw new ArgumentException("Username already exists.");
+
+
+            bool ok = PaymentDataLayer.clsPaymentRepo.CreateUser(username, email, password);
+            if (!ok)
+                throw new InvalidOperationException("Failed to create user");
+
+            
+
+            return true;
+        }
+
+        public static clsPaymentEntities.ClsUser AuthenticateUser(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Username cannot be empty.");
+
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Password cannot be empty.");
+
+            return ValidateUser(username, password);
+        }
+
+        public static clsPaymentEntities.ClsUser ValidateUser(string username, string password)
+        {
+            var user = clsPaymentRepo.GetUserByUsername(username);
+            if (user == null) return null;
+
+            if (user.PasswordHash == null || user.PasswordSalt == null)
+                return null;
+
+            bool ok = AuthHelper.VerifyPassword(password, user.PasswordHash, user.PasswordSalt);
+            return ok ? user : null;
+        }
+
+        #endregion
+
         #region Payment Operations
 
-        public static ClsPayment Find(int paymentId)
+        public static ClsPayment Find(int paymentId,int UserID)
         {
             if (paymentId <= 0) return null;
-            return clsPaymentRepo.GetPaymentInfo(paymentId);
+            return clsPaymentRepo.GetPaymentInfo(paymentId,UserID);
         }
 
         public static string[] GetUniversityCategories()
@@ -106,12 +153,12 @@ namespace PaymentBusinessLayer
             return clsPaymentRepo.SavePayment(ref payment);
         }
 
-        public static bool DeletePayment(int paymentId)
+        public static bool DeletePayment(int paymentId,int UserID)
         {
             if (paymentId <= 0)
                 throw new ArgumentException("Invalid payment ID.");
 
-            return clsPaymentRepo.DeletePayment(paymentId);
+            return clsPaymentRepo.DeletePayment(paymentId, UserID);
         }
 
         public static bool Save(ref ClsPayment payment)
@@ -142,12 +189,12 @@ namespace PaymentBusinessLayer
 
         #region Query Operations
 
-        public static decimal GetTotalAmountByCurrencyCode(string currencyCode)
+        public static decimal GetTotalAmountByCurrencyCode(string currencyCode,int UserId)
         {
             if (string.IsNullOrWhiteSpace(currencyCode))
                 throw new ArgumentException("Currency code cannot be empty.");
 
-            return clsPaymentRepo.GetTotalAmountByCurrencyCode(currencyCode);
+            return clsPaymentRepo.GetTotalAmountByCurrencyCode(currencyCode, UserId);
         }
 
         public static string GetCurrencyCodeByID(int currencyId)
@@ -162,9 +209,9 @@ namespace PaymentBusinessLayer
             return clsPaymentRepo.GetCurrencyIDByCode(currencyCode);
         }
 
-        public static DataTable GetAllTransactions()
+        public static DataTable GetAllTransactions(int UserID)
         {
-            return clsPaymentRepo.GetAllTransactions();
+            return clsPaymentRepo.GetAllTransactions( UserID);
         }
 
         public static DataTable GetAllCurrencies()
@@ -172,17 +219,21 @@ namespace PaymentBusinessLayer
             return clsPaymentRepo.GetAllCurrencies();
         }
 
+        public static DataTable GetCurrencyByCode(string currencyCode) => clsPaymentRepo.GetCurrencyByCode(currencyCode);
+
+        public static DataTable GetAllCurrencyTotals(int UserID) => clsPaymentRepo.GetAllCurrencyTotals(UserID);
+
         public static DataTable GetAllCategories()
         {
             return clsPaymentRepo.GetAllCategories();
         }
 
-        public static DataTable FilterTransactionByDate(string date)
+        public static DataTable FilterTransactionByDate(string date,int UserID)
         {
             if (!ValidateDate(date, out string errorMessage))
                 throw new ArgumentException(errorMessage);
 
-            return clsPaymentRepo.FilterTransactionByDate(date);
+            return clsPaymentRepo.FilterTransactionByDate(date,UserID);
         }
 
         public static DataTable GetCategories(string[] collection, bool university = true)
@@ -199,34 +250,30 @@ namespace PaymentBusinessLayer
             return clsPaymentRepo.GetCategoryIDByName(categoryName);
         }
 
-        public static DataTable GetTotalsByCategoryID(int categoryId)
+        public static DataTable GetTotalsByCategoryID(int categoryID, int UserID)
         {
-            if (categoryId <= 0)
+            if (categoryID <= 0)
                 throw new ArgumentException("Invalid category ID.");
 
-            return clsPaymentRepo.GetTotalsByCategoryID(categoryId);
+            return clsPaymentRepo.GetTotalsByCategoryID(categoryID, UserID);
         }
 
-        public static DataTable GetTransactionsByCategory(string[] categoryCollection, bool university = true)
+        public static DataTable GetTransactionsByCategory(string[] categoryCollection,int UserID ,bool university = true)
         {
             if (categoryCollection == null || categoryCollection.Length == 0)
                 return new DataTable();
 
-            return clsPaymentRepo.GetTransactionsByCategory(categoryCollection, university);
+            return clsPaymentRepo.GetTransactionsByCategory(categoryCollection, UserID, university);
         }
 
-        public static DataTable GetTotalsByCategories(string[] categoryCollection, bool university = true)
+        public static DataTable GetTotalsByCategories(string[] categoryCollection, int UserID, bool university = true)
         {
             if (categoryCollection == null || categoryCollection.Length == 0)
                 return new DataTable();
 
-            return clsPaymentRepo.GetTotalsByCategories(categoryCollection, university);
+            return clsPaymentRepo.GetTotalsByCategories(categoryCollection, UserID, university);
         }
 
-        public static DataTable GetAllCurrencyTotals()
-        {
-            return clsPaymentRepo.GetAllCurrencyTotals();
-        }
 
         #endregion
 
@@ -247,6 +294,8 @@ namespace PaymentBusinessLayer
 
             return clsPaymentRepo.AddCategory(categoryName);
         }
+
+        public static DataTable GetCategoryTotalsByDateRange(int userID, DateTime fromDate, DateTime toDate) => clsPaymentRepo.GetCategoryTotalsByDateRange(userID, fromDate, toDate);
 
         public static bool UpdateCategory(int categoryId, string categoryName)
         {
@@ -271,13 +320,6 @@ namespace PaymentBusinessLayer
 
         #region Currency Management
 
-        public static DataTable GetCurrencyByCode(string currencyCode)
-        {
-            if (string.IsNullOrWhiteSpace(currencyCode))
-                throw new ArgumentException("Currency code cannot be empty.");
-
-            return clsPaymentRepo.GetCurrencyByCode(currencyCode);
-        }
 
         public static bool AddCurrency(string currencyCode, string currencyName, string symbol)
         {

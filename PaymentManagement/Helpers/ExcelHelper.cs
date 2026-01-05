@@ -33,10 +33,10 @@ namespace PaymentManagement
                 try
                 {
                     ExportDataTableToCsv(dataTable, saveDialog.FileName);
-                    MessageBox.Show($"Data exported successfully to:\\n{saveDialog.FileName}", 
+                    MessageBox.Show($"Data exported successfully to:\n{saveDialog.FileName}",
                         PaymentConstants.DialogTitles.Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    if (MessageBox.Show("Do you want to open the exported file?", "Open File", 
+                    if (MessageBox.Show("Do you want to open the exported file?", "Open File",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         System.Diagnostics.Process.Start(saveDialog.FileName);
@@ -44,7 +44,7 @@ namespace PaymentManagement
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error exporting data: {ex.Message}", 
+                    MessageBox.Show($"Error exporting data: {ex.Message}",
                         PaymentConstants.DialogTitles.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -107,9 +107,7 @@ namespace PaymentManagement
             return field;
         }
 
-        /// <summary>
-        /// Imports data from CSV file
-        /// </summary>
+
         public static DataTable ImportFromExcel()
         {
             OpenFileDialog openDialog = new OpenFileDialog
@@ -123,13 +121,13 @@ namespace PaymentManagement
                 try
                 {
                     DataTable dt = ImportCsvToDataTable(openDialog.FileName);
-                    MessageBox.Show($"Data imported successfully!\\nRows imported: {dt.Rows.Count}", 
+                    MessageBox.Show($"Data imported successfully!\nRows imported: {dt.Rows.Count}",
                         PaymentConstants.DialogTitles.Success, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return dt;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error importing data: {ex.Message}", 
+                    MessageBox.Show($"Error importing data: {ex.Message}",
                         PaymentConstants.DialogTitles.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -203,21 +201,19 @@ namespace PaymentManagement
             return fields.ToArray();
         }
 
-        /// <summary>
-        /// Imports transactions from CSV and saves to database
-        /// </summary>
-        public static int ImportTransactions()
+
+        public static int ImportTransactions(int userId)
         {
             DataTable dt = ImportFromExcel();
             if (dt == null || dt.Rows.Count == 0)
                 return 0;
 
-            string[] requiredColumns = { "Amount", "TransactionDate", "CategoryID", "CurrencyID" };
+            string[] requiredColumns = { "Amount", "TransactionDate", "CategoryName", "CurrencyCode" };
             foreach (string col in requiredColumns)
             {
                 if (!dt.Columns.Contains(col))
                 {
-                    MessageBox.Show($"Missing required column: {col}\\n\\nRequired columns: Amount, TransactionDate, CategoryID, CurrencyID, Notes (optional)", 
+                    MessageBox.Show($"Missing required column: {col}\n\nRequired columns: Amount, TransactionDate, CategoryName,CurrencyCode , Notes (optional)",
                         PaymentConstants.DialogTitles.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return 0;
                 }
@@ -233,10 +229,11 @@ namespace PaymentManagement
                 {
                     clsPaymentEntities.ClsPayment payment = new clsPaymentEntities.ClsPayment
                     {
+                        UserID = userId, 
                         Amount = Convert.ToDecimal(row["Amount"]),
                         TransactionDate = Convert.ToDateTime(row["TransactionDate"]),
-                        CategoryID = Convert.ToInt32(row["CategoryID"]),
-                        CurrencyID = Convert.ToInt32(row["CurrencyID"]),
+                        CategoryID = clsPaymentServices.GetCategoryIDByName(row["CategoryName"].ToString()),
+                        CurrencyID = clsPaymentServices.GetCurrencyIDByCode(row["CurrencyCode"].ToString()),
                         Notes = dt.Columns.Contains("Notes") ? row["Notes"].ToString() : "",
                         Mode = clsPaymentEntities.ClsPayment.enMode.AddNew
                     };
@@ -258,13 +255,13 @@ namespace PaymentManagement
                 }
             }
 
-            string message = $"Import completed!\\n\\nSuccessful: {successCount}\\nFailed: {errorCount}";
+            string message = $"Import completed!\n\nSuccessful: {successCount}\nFailed: {errorCount}";
             if (errorCount > 0)
             {
-                message += $"\\n\\nErrors:\\n{errors}";
+                message += $"\n\nErrors:\n{errors}";
             }
 
-            MessageBox.Show(message, PaymentConstants.DialogTitles.Information, MessageBoxButtons.OK, 
+            MessageBox.Show(message, PaymentConstants.DialogTitles.Information, MessageBoxButtons.OK,
                 errorCount > 0 ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
 
             return successCount;

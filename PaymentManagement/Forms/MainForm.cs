@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using PaymentManagement.Helpers;
+
 
 namespace PaymentManagement
 {
@@ -23,6 +25,25 @@ namespace PaymentManagement
         {
             InitializeComponent();
             this.IsMdiContainer = true;
+        }
+
+        /// <summary>
+        /// Display the current user's info and set up logout button/menu.
+        /// </summary>
+        private void SetupUserInfo()
+        {
+            string username = Session.CurrentUser.Username;
+            this.Text = $"Payment Management System - {username}";
+        }
+
+        private void Logout()
+        {
+            if (MessageBox.Show("Are you sure you want to logout?", "Confirm Logout",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                Helpers.Session.CurrentUser = null;
+                this.Close();
+            }
         }
 
         private void InitializeForms()
@@ -132,6 +153,11 @@ namespace PaymentManagement
             }
         }
 
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            Logout();
+        }
+
         private void ShowChildForms()
         {
             if (universityPaymentsForm != null && universityPaymentsForm.Width > 0)
@@ -162,7 +188,7 @@ namespace PaymentManagement
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.Text = "Payment Management System";
+            SetupUserInfo();
             this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(800, 600);
 
@@ -200,7 +226,6 @@ namespace PaymentManagement
 
         public void RefreshSettingsTheme()
         {
-            // Apply theme to active management forms
             if (categoryManagementForm != null && !categoryManagementForm.IsDisposed)
             {
                 ThemeManager.ApplyTheme(categoryManagementForm);

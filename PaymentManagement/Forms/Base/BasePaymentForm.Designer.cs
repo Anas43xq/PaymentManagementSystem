@@ -107,6 +107,7 @@ namespace PaymentManagement
             this.btnAdd.TabIndex = 0;
             this.btnAdd.Text = "➕ Add";
             this.btnAdd.UseVisualStyleBackColor = false;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
             // btnEdit
             // 
@@ -126,6 +127,7 @@ namespace PaymentManagement
             this.btnEdit.TabIndex = 1;
             this.btnEdit.Text = "✏️ Edit";
             this.btnEdit.UseVisualStyleBackColor = false;
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
             // btnDelete
             // 
@@ -145,6 +147,7 @@ namespace PaymentManagement
             this.btnDelete.TabIndex = 2;
             this.btnDelete.Text = "🗑️ Delete";
             this.btnDelete.UseVisualStyleBackColor = false;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnRefresh
             // 
@@ -163,6 +166,7 @@ namespace PaymentManagement
             this.btnRefresh.TabIndex = 3;
             this.btnRefresh.Text = "🔄 Refresh";
             this.btnRefresh.UseVisualStyleBackColor = false;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // lblPurpose
             // 
@@ -187,6 +191,7 @@ namespace PaymentManagement
             this.cmbPurposeFilter.Name = "cmbPurposeFilter";
             this.cmbPurposeFilter.Size = new System.Drawing.Size(180, 29);
             this.cmbPurposeFilter.TabIndex = 7;
+            this.cmbPurposeFilter.SelectedIndexChanged += new System.EventHandler(this.CmbPurposeFilter_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -209,6 +214,7 @@ namespace PaymentManagement
             this.DPPurposeFilter.Name = "DPPurposeFilter";
             this.DPPurposeFilter.Size = new System.Drawing.Size(262, 29);
             this.DPPurposeFilter.TabIndex = 9;
+            this.DPPurposeFilter.ValueChanged += new System.EventHandler(this.DPPurposeFilter_ValueChanged);
             // 
             // btnClearFilter
             // 
@@ -227,6 +233,7 @@ namespace PaymentManagement
             this.btnClearFilter.TabIndex = 8;
             this.btnClearFilter.Text = "Clear Filter";
             this.btnClearFilter.UseVisualStyleBackColor = false;
+            this.btnClearFilter.Click += new System.EventHandler(this.btnClearFilter_Click);
             // 
             // btnCombine
             // 
@@ -246,6 +253,7 @@ namespace PaymentManagement
             this.btnCombine.TabIndex = 11;
             this.btnCombine.Text = "⚡ Combine";
             this.btnCombine.UseVisualStyleBackColor = false;
+            this.btnCombine.Click += new System.EventHandler(this.btnCombine_Click);
             // 
             // btnTheme
             // 
@@ -265,6 +273,7 @@ namespace PaymentManagement
             this.btnTheme.TabIndex = 12;
             this.btnTheme.Text = "🌙 Theme";
             this.btnTheme.UseVisualStyleBackColor = false;
+            this.btnTheme.Click += new System.EventHandler(this.btnTheme_Click);
             // 
             // btnExport
             // 
@@ -284,6 +293,7 @@ namespace PaymentManagement
             this.btnExport.TabIndex = 13;
             this.btnExport.Text = "📤 Export";
             this.btnExport.UseVisualStyleBackColor = false;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // btnImport
             // 
@@ -303,6 +313,7 @@ namespace PaymentManagement
             this.btnImport.TabIndex = 14;
             this.btnImport.Text = "📥 Import";
             this.btnImport.UseVisualStyleBackColor = false;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
             // panelMain
             // 
@@ -365,6 +376,7 @@ namespace PaymentManagement
             this.dgvPayments.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvPayments.Size = new System.Drawing.Size(1549, 602);
             this.dgvPayments.TabIndex = 0;
+            this.dgvPayments.SelectionChanged += new System.EventHandler(this.DgvPayments_SelectionChanged);
             // 
             // CMSPayment
             // 
@@ -430,7 +442,7 @@ namespace PaymentManagement
             this.lblTotalAED.Location = new System.Drawing.Point(590, 27);
             this.lblTotalAED.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTotalAED.Name = "lblTotalAED";
-            this.lblTotalAED.Size = new System.Drawing.Size(172, 28);
+            this.lblTotalAED.Size = new System.Drawing.Size(157, 28);
             this.lblTotalAED.TabIndex = 2;
             this.lblTotalAED.Text = "Total AED: 0.00";
             // 

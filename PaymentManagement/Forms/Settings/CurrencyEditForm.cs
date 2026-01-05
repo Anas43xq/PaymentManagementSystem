@@ -111,5 +111,10 @@ namespace PaymentManagement
             this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
+
+        private void panelButtons_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using clsPaymentEntities;
 using PaymentBusinessLayer;
+using PaymentManagement.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using static PaymentManagement.frmPaymentForm;
 
 namespace PaymentManagement
 {
@@ -25,8 +25,9 @@ namespace PaymentManagement
         private ClsPayment payment = new ClsPayment();
         private enFormMode _formMode;
         private int _PaymentID;
+        public int UserID { get; set; }
 
-        public frmPaymentForm(enFormMode formMode,int PaymentID)
+        public frmPaymentForm(enFormMode formMode, int PaymentID)
         {
             InitializeComponent();
             _formMode = formMode;
@@ -37,9 +38,6 @@ namespace PaymentManagement
         private string _combinedNotes = "";
         private bool _isCombinedPayment = false;
 
-        /// <summary>
-        /// Sets the form to display combined payment data
-        /// </summary>
         public void SetCombinedPayment(decimal totalAmountUSD, string notes)
         {
             _isCombinedPayment = true;
@@ -49,23 +47,45 @@ namespace PaymentManagement
 
         private void PaymentForm_Load(object sender, EventArgs e)
         {
+  
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in.", "Authentication Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
+                return;
+            }
+
+            if (UserID <= 0)
+            {
+                UserID = Session.CurrentUser.ID;
+            }
+
             ThemeManager.ApplyTheme(this);
             SetupForm();
             SetupComboBoxes();
             SetupDatePickers();
-            
+
             txtAmount.Focus();
 
-            if (_PaymentID != 1 && _formMode == enFormMode.Edit)
+            if (_PaymentID != -1 && _formMode == enFormMode.Edit)
             {
-                payment = clsPaymentServices.Find(_PaymentID);
-                if (payment != null )
+                payment = clsPaymentServices.Find(_PaymentID, UserID);
+                if (payment != null)
                 {
                     FillFeilds();
                 }
+                else
+                {
+                    MessageBox.Show("Payment not found or you don't have permission to edit it.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.DialogResult = DialogResult.Cancel;
+                    this.Close();
+                    return;
+                }
             }
 
-            // Apply combined payment values if this is a combined transaction
             if (_isCombinedPayment)
             {
                 txtAmount.Text = _combinedAmount.ToString();
@@ -73,18 +93,17 @@ namespace PaymentManagement
                 txtNotes.Text = _combinedNotes;
                 this.Text = "Add Combined Payment";
             }
-
         }
 
         private void SetupForm()
         {
-            string action = _formMode == enFormMode.Add ? "Add" : "Edit";
-            this.Text = $"{action} Form";
+            string action = _formMode == enFormMode.Add ? "New Payment" : "Edit Payment";
+            this.Text = action;
         }
 
         private void FillFeilds()
         {
-            if(_formMode == enFormMode.Edit)
+            if (_formMode == enFormMode.Edit)
             {
                 txtAmount.Text = payment.Amount.ToString();
                 dtpPaymentDate.Value = payment.TransactionDate;
@@ -96,7 +115,6 @@ namespace PaymentManagement
 
         private void SetupComboBoxes()
         {
-            // Setup Currency ComboBox
             cmbCurrency.Items.Clear();
 
             DataTable dt = clsPaymentServices.GetAllCurrencies();
@@ -106,14 +124,6 @@ namespace PaymentManagement
                 cmbCurrency.Items.Add(row["Code"].ToString());
             }
 
-
-
-            cmbPaymentMethod.Items.Clear();
-            cmbPaymentMethod.Items.Add("Cash");
-            cmbPaymentMethod.Items.Add("Bank Transfer");
-            cmbPaymentMethod.Items.Add("Credit Card");
-            cmbPaymentMethod.Items.Add("Check");
-
             cmbCategory.Items.Clear();
 
             dt = clsPaymentServices.GetAllCategories();
@@ -122,35 +132,33 @@ namespace PaymentManagement
             {
                 cmbCategory.Items.Add(row["Name"].ToString());
             }
-            cmbStatus.Items.Clear();
-            cmbStatus.Items.Add("Pending");
-            cmbStatus.Items.Add("Done");
-            cmbStatus.Items.Add("Cancelled");
-            cmbStatus.Items.Add("In Progress");
-            cmbStatus.Items.Add("On Hold");
 
             cmbCurrency.SelectedIndex = 0;
-            cmbStatus.SelectedIndex = 0;
             cmbCategory.SelectedIndex = 0;
-            cmbStatus.SelectedItem = "Done";
-            cmbPaymentMethod.SelectedItem = "Cash";
         }
 
-        private void SetupDatePickers()
-        {
-            // Set default dates
-            dtpPaymentDate.Value = DateTime.Now;
-        }
+        private void SetupDatePickers() => dtpPaymentDate.Value = DateTime.Now;
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (ValidateForm())
             {
+                payment.UserID = UserID;
                 payment.Amount = Convert.ToDecimal(txtAmount.Text);
                 payment.TransactionDate = dtpPaymentDate.Value;
                 payment.Notes = txtNotes.Text;
                 payment.CurrencyID = clsPaymentServices.GetCurrencyIDByCode(cmbCurrency.SelectedItem.ToString());
                 payment.CategoryID = clsPaymentServices.GetCategoryIDByName(cmbCategory.SelectedItem.ToString());
+
+
+                if (_formMode == enFormMode.Add)
+                {
+                    payment.Mode = ClsPayment.enMode.AddNew;
+                }
+                else
+                {
+                    payment.Mode = ClsPayment.enMode.Update;
+                }
 
                 if (clsPaymentServices.Save(ref payment))
                 {
@@ -159,6 +167,12 @@ namespace PaymentManagement
 
                     this.DialogResult = DialogResult.OK;
                 }
+                else
+                {
+                    MessageBox.Show($"Failed to {(_formMode == enFormMode.Add ? "add" : "update")} payment.",
+                                   "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
                 this.Close();
             }
         }
@@ -171,7 +185,6 @@ namespace PaymentManagement
 
         private bool ValidateForm()
         {
-
             if (string.IsNullOrWhiteSpace(txtAmount.Text))
             {
                 MessageBox.Show("Please enter an amount.", "Validation Error",
@@ -214,14 +227,12 @@ namespace PaymentManagement
                 cmbCurrency.SelectedItem = currency;
                 e.Handled = true;
             }
-            
-            // Allow: digits, control keys (backspace, delete), and decimal point
+
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
             {
                 e.Handled = true;
             }
 
-            // Allow only one decimal point
             if (e.KeyChar == '.' && ((TextBox)sender).Text.Contains("."))
             {
                 e.Handled = true;
@@ -238,18 +249,21 @@ namespace PaymentManagement
             string cleanText = txtAmount.Text.Replace(",", "");
             if (decimal.TryParse(cleanText, out decimal value))
             {
-                txtAmount.TextChanged -= txtAmount_TextChanged; // prevent recursion
-                txtAmount.Text = string.Format("{0:N2}", value); // "N2" = comma-separated with 2 decimal places
-                txtAmount.SelectionStart = Math.Min(selectionStart + 1, txtAmount.Text.Length);
+                txtAmount.TextChanged -= txtAmount_TextChanged; 
+
+                string formattedText = string.Format("{0:N2}", value);
+                int commasBeforeCursor = txtAmount.Text.Substring(0, selectionStart).Count(c => c == ',');
+                int commasAfterFormat = formattedText.Substring(0, Math.Min(selectionStart, formattedText.Length)).Count(c => c == ',');
+
+                txtAmount.Text = formattedText;
+                txtAmount.SelectionStart = Math.Min(selectionStart + (commasAfterFormat - commasBeforeCursor), txtAmount.Text.Length);
                 txtAmount.SelectionLength = selectionLength;
                 txtAmount.TextChanged += txtAmount_TextChanged;
             }
         }
 
-
         private void cmbCurrency_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             string CurrencyCode = cmbCurrency.SelectedItem.ToString();
 
             lblAmount.Text = "Amount (";

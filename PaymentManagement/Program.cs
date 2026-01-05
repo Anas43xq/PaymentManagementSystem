@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -9,23 +8,24 @@ namespace PaymentManagement
 {
     internal static class Program
     {
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool AllocConsole();
-
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // Allocate console for debugging
-            AllocConsole();
-            Console.WriteLine("=== Payment Management System - Debug Console ===");
-            Console.WriteLine("Console initialized. Debug output will appear here.\n");
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            // Show login form first
+            using (var login = new Forms.Auth.frmLogin())
+            {
+                var result = login.ShowDialog();
+                if (result != System.Windows.Forms.DialogResult.OK)
+                    return; // exit if not authenticated
+            }
+
             Application.Run(new MainForm());
         }
     }

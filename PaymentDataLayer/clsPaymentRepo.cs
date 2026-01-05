@@ -11,8 +11,8 @@ namespace PaymentDataLayer
 {
     public static class clsRepoSettings
     {
-        internal static string ConnectionString = 
-            ConfigurationManager.ConnectionStrings["PaymentDB"]?.ConnectionString 
+        internal static string ConnectionString =
+            ConfigurationManager.ConnectionStrings["PaymentDB"]?.ConnectionString
             ?? "Server=.;Database=DBPayments;Trusted_Connection=True;";
     }
 
@@ -115,6 +115,81 @@ namespace PaymentDataLayer
 
         #endregion
 
+        #region Users
+
+        private static void PrepareUserParameters(SqlCommand cmd, clsPaymentEntities.ClsUser user, bool isUpdate = false)
+        {
+            if (isUpdate)
+                cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.ID;
+
+            cmd.Parameters.Add("@Username", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(user.Username) ? (object)DBNull.Value : user.Username;
+            cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(user.Email) ? (object)DBNull.Value : user.Email;
+            cmd.Parameters.Add("@PasswordHash", SqlDbType.VarBinary).Value = user.PasswordHash ?? (object)DBNull.Value;
+            cmd.Parameters.Add("@PasswordSalt", SqlDbType.VarBinary).Value = user.PasswordSalt ?? (object)DBNull.Value;
+        }
+
+        public static clsPaymentEntities.ClsUser GetUserByUsername(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username)) return null;
+
+            string query = "SELECT UserId, Username, Email, PasswordHash, PasswordSalt, CreatedAt FROM dbo.Users WHERE Username = @Username";
+            return ExecuteSingleRow(query,
+                cmd => cmd.Parameters.AddWithValue("@Username", username),
+                MapUserFromReader);
+        }
+
+        public static bool CreateUser(string username, string email, string password)
+        {
+            var user = new clsPaymentEntities.ClsUser
+            {
+                Username = username,
+                Email = email
+            };
+
+            AuthHelper.CreatePasswordHash(password, out byte[] hash, out byte[] salt);
+            user.PasswordHash = hash;
+            user.PasswordSalt = salt;
+
+            return AddUser(user);
+        }
+
+        public static bool AddUser(clsPaymentEntities.ClsUser user)
+        {
+            if (user == null) return false;
+
+            if (string.IsNullOrWhiteSpace(user.Username))
+            {
+                MessageBox.Show("Username is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (RecordExists("Users", "Username", user.Username))
+            {
+                MessageBox.Show("Username already exists.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            string query = @"
+                INSERT INTO dbo.Users (Username, Email, PasswordHash, PasswordSalt, CreatedAt)
+                VALUES (@Username, @Email, @PasswordHash, @PasswordSalt, GETDATE());
+                SELECT SCOPE_IDENTITY();";
+
+            return ExecuteScalar(query,
+                cmd => PrepareUserParameters(cmd, user),
+                result =>
+                {
+                    if (int.TryParse(result?.ToString(), out int newId))
+                    {
+                        user.ID = newId;
+                        return true;
+                    }
+                    return false;
+                });
+        }
+
+
+        #endregion
+
         #region Generic CRUD Operations
 
         private static bool RecordExists(string tableName, string columnName, object value)
@@ -161,6 +236,7 @@ namespace PaymentDataLayer
                 TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
                 CategoryID = reader.GetInt32(reader.GetOrdinal("CategoryID")),
                 CurrencyID = reader.GetInt32(reader.GetOrdinal("CurrencyID")),
+                UserID = reader.GetInt32(reader.GetOrdinal("UserID")),
                 CategoryName = reader.IsDBNull(reader.GetOrdinal("CategoryName")) ? null : reader.GetString(reader.GetOrdinal("CategoryName")),
                 CurrencyCode = reader.IsDBNull(reader.GetOrdinal("CurrencyCode")) ? null : reader.GetString(reader.GetOrdinal("CurrencyCode")),
                 Notes = reader.IsDBNull(reader.GetOrdinal("Notes")) ? null : reader.GetString(reader.GetOrdinal("Notes")),
@@ -194,6 +270,19 @@ namespace PaymentDataLayer
             };
         }
 
+        private static clsPaymentEntities.ClsUser MapUserFromReader(SqlDataReader reader)
+        {
+            return new clsPaymentEntities.ClsUser
+            {
+                ID = reader.GetInt32(reader.GetOrdinal("UserId")),
+                Username = reader.IsDBNull(reader.GetOrdinal("Username")) ? null : reader.GetString(reader.GetOrdinal("Username")),
+                Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")),
+                PasswordHash = reader.IsDBNull(reader.GetOrdinal("PasswordHash")) ? null : (byte[])reader[reader.GetOrdinal("PasswordHash")],
+                PasswordSalt = reader.IsDBNull(reader.GetOrdinal("PasswordSalt")) ? null : (byte[])reader[reader.GetOrdinal("PasswordSalt")],
+                CreatedAt = reader.IsDBNull(reader.GetOrdinal("CreatedAt")) ? DateTime.MinValue : reader.GetDateTime(reader.GetOrdinal("CreatedAt"))
+            };
+        }
+
         #endregion
 
         #region Parameter Preparation Methods
@@ -204,9 +293,10 @@ namespace PaymentDataLayer
                 cmd.Parameters.Add("@ID", SqlDbType.Int).Value = payment.ID;
 
             cmd.Parameters.Add("@Amount", SqlDbType.Decimal).Value = payment.Amount;
-            cmd.Parameters.Add("@TransactionDate", SqlDbType.DateTime).Value = payment.TransactionDate;
+            cmd.Parameters.Add("@TransactionDate", SqlDbType.Date).Value = payment.TransactionDate;
             cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = payment.CategoryID;
             cmd.Parameters.Add("@CurrencyID", SqlDbType.Int).Value = payment.CurrencyID;
+            cmd.Parameters.Add("@UserID", SqlDbType.Int).Value = payment.UserID;
             cmd.Parameters.Add("@Notes", SqlDbType.NVarChar).Value = string.IsNullOrEmpty(payment.Notes) ? (object)DBNull.Value : payment.Notes;
         }
 
@@ -214,17 +304,22 @@ namespace PaymentDataLayer
 
         #region Payments
 
-        public static ClsPayment GetPaymentInfo(int PaymentID)
+        public static ClsPayment GetPaymentInfo(int PaymentID, int UserID)
         {
             string query = @"SELECT 
-                T.ID, T.Amount, T.TransactionDate, T.CategoryID, T.CurrencyID, T.Notes, T.CreatedAt,
+                T.ID, T.Amount, T.TransactionDate, T.CategoryID, T.CurrencyID, T.UserID, T.Notes, T.CreatedAt,
                 C.Name AS CategoryName, CU.Code AS CurrencyCode
             FROM Transactions T
             INNER JOIN Categories C ON T.CategoryID = C.ID
             INNER JOIN Currencies CU ON T.CurrencyID = CU.ID
-            WHERE T.ID = @ID";
+            WHERE T.ID = @ID AND T.UserID = @UserID";
+
             return ExecuteSingleRow(query,
-                cmd => cmd.Parameters.AddWithValue("@ID", PaymentID),
+                cmd =>
+                {
+                    cmd.Parameters.AddWithValue("@ID", PaymentID);
+                    cmd.Parameters.AddWithValue("@UserID", UserID);
+                },
                 MapPaymentFromReader);
         }
 
@@ -242,6 +337,12 @@ namespace PaymentDataLayer
 
         private static bool AddPayment(ClsPayment payment)
         {
+            if (payment.UserID <= 0)
+            {
+                MessageBox.Show("UserID is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
             if (!RecordExists("Categories", "ID", payment.CategoryID))
             {
                 MessageBox.Show($"CategoryID {payment.CategoryID} does not exist.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -256,9 +357,9 @@ namespace PaymentDataLayer
 
             string query = @"
                 INSERT INTO [dbo].[Transactions]
-                    ([Amount],[TransactionDate],[CategoryID],[CurrencyID],[Notes])
+                    ([Amount],[TransactionDate],[CategoryID],[CurrencyID],[UserID],[Notes],[CreatedAt])
                 VALUES
-                    (@Amount,@TransactionDate,@CategoryID,@CurrencyID,@Notes);
+                    (@Amount,@TransactionDate,@CategoryID,@CurrencyID,@UserID,@Notes,GETDATE());
                 SELECT SCOPE_IDENTITY();";
 
             return ExecuteScalar(query,
@@ -284,16 +385,32 @@ namespace PaymentDataLayer
                     [CategoryID]      = @CategoryID,
                     [CurrencyID]      = @CurrencyID,
                     [Notes]           = @Notes
-                WHERE ID = @ID";
+                WHERE ID = @ID AND UserID = @UserID";
 
             return ExecuteNonQuery(query, cmd => PreparePaymentParameters(cmd, payment, true));
         }
 
-        public static bool DeletePayment(int PaymentID) =>
-            DeleteRecord("Transactions", "ID", PaymentID);
+        public static bool DeletePayment(int PaymentID, int UserID)
+        {
+            string query = "DELETE FROM Transactions WHERE ID = @ID AND UserID = @UserID";
+            return ExecuteNonQuery(query, cmd =>
+            {
+                cmd.Parameters.AddWithValue("@ID", PaymentID);
+                cmd.Parameters.AddWithValue("@UserID", UserID);
+            });
+        }
 
-        public static bool PaymentExists(int paymentID) =>
-            RecordExists("Transactions", "ID", paymentID);
+        public static bool PaymentExists(int paymentID, int UserID)
+        {
+            string query = "SELECT COUNT(*) FROM Transactions WHERE ID = @ID AND UserID = @UserID";
+            return ExecuteScalar(query,
+                cmd =>
+                {
+                    cmd.Parameters.AddWithValue("@ID", paymentID);
+                    cmd.Parameters.AddWithValue("@UserID", UserID);
+                },
+                result => Convert.ToInt32(result) > 0);
+        }
 
         public static bool Save(ClsPayment Payment)
         {
@@ -317,36 +434,119 @@ namespace PaymentDataLayer
 
         #region Categories
 
+
+        private static ClsCategory GetCategoryBy(string columnName, object value)
+        {
+            string query = $"SELECT * FROM Categories WHERE {columnName} = @Value";
+            return ExecuteSingleRow(query,
+                cmd => cmd.Parameters.AddWithValue("@Value", value),
+                MapCategoryFromReader);
+        }
+
+        private static bool CategoryExistsBy(string columnName, object value) =>
+            RecordExists("Categories", columnName, value);
+
+        private static void PrepareCategoryParameters(SqlCommand cmd, ClsCategory category, bool isUpdate = false)
+        {
+            if (isUpdate)
+                cmd.Parameters.Add("@ID", SqlDbType.Int).Value = category.ID;
+
+            cmd.Parameters.Add("@Name", SqlDbType.NVarChar).Value =
+                string.IsNullOrEmpty(category.Name) ? (object)DBNull.Value : category.Name;
+
+            cmd.Parameters.Add("@IsActive", SqlDbType.Bit).Value = category.IsActive;
+        }
+
         public static int GetCategoryIDByName(string categoryName)
         {
             if (string.IsNullOrWhiteSpace(categoryName)) return 0;
-
-            string query = "SELECT ID FROM Categories WHERE Name = @CategoryName";
-            return ExecuteScalar(query,
-                cmd => cmd.Parameters.AddWithValue("@CategoryName", categoryName),
+            return ExecuteScalar("SELECT ID FROM Categories WHERE Name = @Name",
+                cmd => cmd.Parameters.AddWithValue("@Name", categoryName),
                 result => Convert.ToInt32(result));
         }
 
         public static string GetCategoryNameByID(int categoryID) =>
             GetFieldById("Categories", "Name", "ID", categoryID);
 
-        public static ClsCategory GetCategoryInfo(int categoryID)
+
+        public static ClsCategory GetCategoryInfo(int categoryID) =>
+            GetCategoryBy("ID", categoryID);
+
+        public static ClsCategory GetCategoryInfoByName(string categoryName) =>
+            GetCategoryBy("Name", categoryName);
+
+
+        public static bool CategoryExists(int categoryID) => CategoryExistsBy("ID", categoryID);
+
+        public static bool CategoryExistsByName(string categoryName) => CategoryExistsBy("Name", categoryName);
+
+
+        public static DataTable GetAllCategories() =>
+            ExecuteDataTable("SELECT ID, Name, IsActive FROM Categories WHERE IsActive = 1 ORDER BY Name");
+
+        public static DataTable GetCategoryById(int categoryID) =>
+            ExecuteDataTable("SELECT ID, Name FROM Categories WHERE ID = @ID",
+                cmd => cmd.Parameters.AddWithValue("@ID", categoryID));
+
+        public static DataTable GetCategories(string[] collection, bool includeListed = true)
         {
-            string query = "SELECT * FROM Categories WHERE ID = @ID";
-            return ExecuteSingleRow(query,
-                cmd => cmd.Parameters.AddWithValue("@ID", categoryID),
-                MapCategoryFromReader);
+            if (collection == null || collection.Length == 0) return new DataTable();
+
+            var paramNames = collection.Select((c, i) => $"@cat{i}").ToArray();
+            string query = $@"
+            SELECT Name
+            FROM Categories
+            WHERE Name {(includeListed ? "" : "NOT")} IN ({string.Join(",", paramNames)})
+            ORDER BY Name";
+
+            return ExecuteDataTable(query, cmd =>
+            {
+                for (int i = 0; i < collection.Length; i++)
+                    cmd.Parameters.AddWithValue(paramNames[i], collection[i]);
+            });
         }
 
+        //===============================
+        // 6. ADD / UPDATE / DELETE
+        //===============================
 
+        public static bool AddCategory(string categoryName)
+        {
+            string query = "INSERT INTO Categories (Name, IsActive) VALUES (@Name, 1)";
+            return ExecuteNonQuery(query, cmd => cmd.Parameters.AddWithValue("@Name", categoryName));
+        }
 
-        public static bool CategoryExists(int categoryID) =>
-            RecordExists("Categories", "ID", categoryID);
+        public static bool UpdateCategory(int categoryId, string categoryName)
+        {
+            string query = "UPDATE Categories SET Name = @Name WHERE ID = @CategoryID";
+            return ExecuteNonQuery(query, cmd =>
+            {
+                cmd.Parameters.AddWithValue("@CategoryID", categoryId);
+                cmd.Parameters.AddWithValue("@Name", categoryName);
+            });
+        }
 
-        public static bool CategoryExistsByName(string categoryName) =>
-            RecordExists("Categories", "Name", categoryName);
+        //public static bool AddCategory(ClsCategory category)
+        //{
+        //    string query = "INSERT INTO Categories (Name, IsActive) VALUES (@Name, @IsActive)";
+        //    return ExecuteNonQuery(query, cmd => PrepareCategoryParameters(cmd, category));
+        //}
+
+        //public static bool UpdateCategory(ClsCategory category)
+        //{
+        //    string query = "UPDATE Categories SET Name = @Name, IsActive = @IsActive WHERE ID = @ID";
+        //    return ExecuteNonQuery(query, cmd => PrepareCategoryParameters(cmd, category, true));
+        //}
+
+        public static bool DeleteCategory(int categoryID)
+        {
+            // Soft delete by setting IsActive = 0
+            string query = "UPDATE Categories SET IsActive = 0 WHERE ID = @ID";
+            return ExecuteNonQuery(query, cmd => cmd.Parameters.AddWithValue("@ID", categoryID));
+        }
 
         #endregion
+
 
         #region Currencies
 
@@ -381,8 +581,6 @@ namespace PaymentDataLayer
                 MapCurrencyFromReader);
         }
 
-
-
         public static bool CurrencyExists(int currencyID) =>
             RecordExists("Currencies", "ID", currencyID);
 
@@ -391,91 +589,189 @@ namespace PaymentDataLayer
 
         #endregion
 
-        #region Reports / Utilities
+        #region Reports / Utilities - USER SPECIFIC
 
-        public static DataTable FilterTransactionByDate(string date)
+        public static DataTable FilterTransactionByDate(string date, int userId)
         {
-            string query = "SELECT * FROM TransactionDetails WHERE TransactionDate = @Date";
-            return ExecuteDataTable(query,
-                cmd => cmd.Parameters.AddWithValue("@Date", date));
+            string query = @"
+        SELECT 
+              ID
+            , UserID
+            , Amount
+            , FormattedAmount
+            , TransactionDate
+            , CategoryName
+            , CurrencyCode
+            , Notes
+            , CreatedAt
+        FROM [DBPayments].[dbo].[TransactionDetails]
+        WHERE TransactionDate = @Date
+          AND UserID = @UserID;
+    ";
+
+            return ExecuteDataTable(query, cmd =>
+            {
+                cmd.Parameters.AddWithValue("@Date", date);
+                cmd.Parameters.AddWithValue("@UserID", userId);
+            });
         }
 
-        public static decimal GetTotalAmountByCurrencyCode(string currencyCode)
+        public static decimal GetTotalAmountByCurrencyCode(string currencyCode, int userId)
         {
-            if (string.IsNullOrWhiteSpace(currencyCode)) return 0;
+            if (string.IsNullOrWhiteSpace(currencyCode))
+                return 0;
 
             string query = @"
-                SELECT ISNULL(SUM(t.Amount), 0) AS TotalAmount
-                FROM Transactions t
-                INNER JOIN Currencies c ON t.CurrencyID = c.ID
-                WHERE c.Code = @CurrencyCode
-                GROUP BY c.Code";
+        SELECT ISNULL(SUM(Amount), 0) AS TotalAmount
+        FROM [DBPayments].[dbo].[TransactionDetails]
+        WHERE CurrencyCode = @CurrencyCode
+          AND UserID = @UserID
+        GROUP BY CurrencyCode;
+    ";
 
-            return ExecuteScalar(query,
-                cmd => cmd.Parameters.AddWithValue("@CurrencyCode", currencyCode.ToUpper()),
-                result => Convert.ToDecimal(result));
+            return ExecuteScalar(
+                query,
+                cmd =>
+                {
+                    cmd.Parameters.AddWithValue("@CurrencyCode", currencyCode.ToUpper());
+                    cmd.Parameters.AddWithValue("@UserID", userId);
+                },
+                result => Convert.ToDecimal(result)
+            );
         }
 
-        public static DataTable GetTotalsByCategoryID(int categoryID)
+
+        public static DataTable GetTotalsByCategoryID(int categoryID, int UserID)
         {
             string query = @"
                 SELECT 
                     cat.Name AS CatName,
                     c.Code AS CurrencyCode,
                     SUM(t.Amount) AS TotalAmount
-                FROM TransactionDetails td
-                WHERE cat.ID = @CategoryID
-                GROUP BY cat.Name, c.Code";
-
-            return ExecuteDataTable(query,
-                cmd => cmd.Parameters.AddWithValue("@CategoryID", categoryID));
-        }
-
-        public static DataTable GetTotalsByCategories(string[] categoryCollection, bool university = true)
-        {
-            if (categoryCollection == null || categoryCollection.Length == 0)
-                return new DataTable();
-
-            var paramNames = categoryCollection.Select((c, i) => $"@cat{i}").ToArray();
-            string query = $@"
-                SELECT c.Code, ISNULL(SUM(t.Amount), 0) AS TotalAmount
                 FROM Transactions t
                 INNER JOIN Categories cat ON t.CategoryID = cat.ID
                 INNER JOIN Currencies c ON t.CurrencyID = c.ID
-                WHERE cat.Name {(university ? "" : "NOT")} IN ({string.Join(",", paramNames)})
-                GROUP BY c.Code
-                ORDER BY c.Code";
+                WHERE cat.ID = @CategoryID AND t.UserID = @UserID
+                GROUP BY cat.Name, c.Code";
 
             return ExecuteDataTable(query, cmd =>
             {
-                for (int i = 0; i < categoryCollection.Length; i++)
-                    cmd.Parameters.AddWithValue(paramNames[i], categoryCollection[i]);
+                cmd.Parameters.AddWithValue("@CategoryID", categoryID);
+                cmd.Parameters.AddWithValue("@UserID", UserID);
             });
         }
 
-        public static DataTable GetTransactionsByCategory(string[] categoryCollection, bool university = true)
+        private static (string sqlInClause, Action<SqlCommand> binder) BuildCategoryFilter(string[] categories, int userId, bool university)
         {
-            if (categoryCollection == null || categoryCollection.Length == 0)
+            var paramNames = categories.Select((c, i) => $"@cat{i}").ToArray();
+            string inClause = string.Join(",", paramNames);
+
+            string sqlIn = $"CategoryName {(university ? "" : "NOT ")}IN ({inClause}) AND UserID = @UserID";
+
+            // binder adds all SQL parameters
+            void binder(SqlCommand cmd)
+            {
+                for (int i = 0; i < categories.Length; i++)
+                    cmd.Parameters.AddWithValue(paramNames[i], categories[i]);
+
+                cmd.Parameters.AddWithValue("@UserID", userId);
+            }
+
+            return (sqlIn, binder);
+        }
+
+        public static DataTable GetTotalsByCategories(string[] categories, int userId, bool university = true)
+        {
+            if (categories == null || categories.Length == 0)
                 return new DataTable();
 
-            var paramNames = categoryCollection.Select((c, i) => $"@cat{i}").ToArray();
+            var (filter, binder) = BuildCategoryFilter(categories, userId, university);
+
             string query = $@"
-                SELECT td.*
-                FROM TransactionDetails td
-                WHERE td.CategoryName {(university ? "" : "NOT")} IN ({string.Join(",", paramNames)})
-                ORDER BY td.TransactionDate DESC";
+              SELECT 
+                  CurrencyCode AS Code,
+                  ISNULL(SUM(Amount), 0) AS TotalAmount
+              FROM [DBPayments].[dbo].[TransactionDetails]
+              WHERE {filter}
+              GROUP BY CurrencyCode
+              ORDER BY CurrencyCode;
+              ";
+
+            return ExecuteDataTable(query, binder);
+        }
+
+        public static DataTable GetTransactionsByCategory(string[] categories, int userId, bool university = true)
+        {
+            if (categories == null || categories.Length == 0)
+                return new DataTable();
+
+            var (filter, binder) = BuildCategoryFilter(categories, userId, university);
+
+            string query = $@"
+        SELECT 
+              ID
+            , UserID
+            , Amount
+            , FormattedAmount
+            , TransactionDate
+            , CategoryName
+            , CurrencyCode
+            , Notes
+            , CreatedAt
+        FROM [DBPayments].[dbo].[TransactionDetails]
+        WHERE {filter}
+        ORDER BY TransactionDate DESC;
+    ";
+
+            return ExecuteDataTable(query, binder);
+        }
+
+        public static DataTable GetCategoryTotals(int userID)
+        {
+            // Get current year's data by default
+            DateTime fromDate = new DateTime(DateTime.Now.Year, 1, 1);
+            DateTime toDate = new DateTime(DateTime.Now.Year, 12, 31);
+
+            return GetCategoryTotalsByDateRange(userID, fromDate, toDate);
+        }
+
+        public static DataTable GetCategoryTotalsByDateRange(int userID, DateTime fromDate, DateTime toDate)
+        {
+            string query = @"
+        SELECT
+            UserID,
+            CategoryName,
+            CurrencyCode,
+            SUM(Amount) AS TotalAmount
+        FROM TransactionDetails
+        WHERE UserID = @UserID
+          AND TransactionDate BETWEEN @FromDate AND @ToDate
+        GROUP BY
+            UserID,
+            CategoryName,
+            CurrencyCode
+        ORDER BY
+            CategoryName,
+            CurrencyCode";
 
             return ExecuteDataTable(query, cmd =>
             {
-                for (int i = 0; i < categoryCollection.Length; i++)
-                    cmd.Parameters.AddWithValue(paramNames[i], categoryCollection[i]);
+                cmd.Parameters.AddWithValue("@UserID", userID);
+                cmd.Parameters.AddWithValue("@FromDate", fromDate);
+                cmd.Parameters.AddWithValue("@ToDate", toDate);
             });
         }
 
-        public static DataTable GetAllTransactions()
+        public static DataTable GetAllTransactions(int UserID)
         {
-            string query = "SELECT * FROM TransactionDetails ORDER BY TransactionDate DESC";
-            return ExecuteDataTable(query);
+            string query = @"SELECT T.*, C.Name AS CategoryName, CU.Code AS CurrencyCode
+                FROM Transactions T
+                INNER JOIN Categories C ON T.CategoryID = C.ID
+                INNER JOIN Currencies CU ON T.CurrencyID = CU.ID
+                WHERE T.UserID = @UserID
+                ORDER BY T.TransactionDate DESC";
+
+            return ExecuteDataTable(query, cmd => cmd.Parameters.AddWithValue("@UserID", UserID));
         }
 
         public static DataTable GetAllCurrencies()
@@ -484,72 +780,18 @@ namespace PaymentDataLayer
             return ExecuteDataTable(query);
         }
 
-        public static DataTable GetAllCurrencyTotals()
+        public static DataTable GetAllCurrencyTotals(int UserID)
         {
             string query = @"
                 SELECT 
                     C.Code, 
                     ISNULL(SUM(T.Amount), 0) AS TotalAmount
                 FROM dbo.Currencies AS C
-                LEFT JOIN dbo.Transactions AS T ON C.ID = T.CurrencyID
+                LEFT JOIN dbo.Transactions AS T ON C.ID = T.CurrencyID AND T.UserID = @UserID
                 GROUP BY C.Code
                 ORDER BY C.Code";
 
-            return ExecuteDataTable(query);
-        }
-
-
-        public static DataTable GetAllCategories()
-        {
-            string query = "SELECT ID, Name, IsActive FROM Categories WHERE IsActive = 1 ORDER BY Name";
-            return ExecuteDataTable(query);
-        }
-
-        public static DataTable GetCategories(string[] collection, bool university = true)
-        {
-            if (collection == null || collection.Length == 0)
-                return new DataTable();
-
-            var paramNames = collection.Select((c, i) => $"@cat{i}").ToArray();
-            string query = $@"
-                SELECT Name
-                FROM Categories
-                WHERE Name {(university ? "" : "NOT")} IN ({string.Join(",", paramNames)})
-                ORDER BY Name";
-
-            return ExecuteDataTable(query, cmd =>
-            {
-                for (int i = 0; i < collection.Length; i++)
-                    cmd.Parameters.AddWithValue(paramNames[i], collection[i]);
-            });
-        }
-
-        public static DataTable GetCategoryById(int categoryId)
-        {
-            string query = "SELECT ID, Name FROM Categories WHERE ID = @CategoryID";
-            return ExecuteDataTable(query, cmd => cmd.Parameters.AddWithValue("@CategoryID", categoryId));
-        }
-
-        public static bool AddCategory(string categoryName)
-        {
-            string query = "INSERT INTO Categories (Name, IsActive) VALUES (@Name, 1)";
-            return ExecuteNonQuery(query, cmd => cmd.Parameters.AddWithValue("@Name", categoryName));
-        }
-
-        public static bool UpdateCategory(int categoryId, string categoryName)
-        {
-            string query = "UPDATE Categories SET Name = @Name WHERE ID = @CategoryID";
-            return ExecuteNonQuery(query, cmd =>
-            {
-                cmd.Parameters.AddWithValue("@CategoryID", categoryId);
-                cmd.Parameters.AddWithValue("@Name", categoryName);
-            });
-        }
-
-        public static bool DeleteCategory(int categoryId)
-        {
-            string query = "UPDATE Categories SET IsActive = 0 WHERE ID = @CategoryID";
-            return ExecuteNonQuery(query, cmd => cmd.Parameters.AddWithValue("@CategoryID", categoryId));
+            return ExecuteDataTable(query, cmd => cmd.Parameters.AddWithValue("@UserID", UserID));
         }
 
         public static DataTable GetCurrencyByCode(string currencyCode)
@@ -560,7 +802,7 @@ namespace PaymentDataLayer
 
         public static bool AddCurrency(string currencyCode, string currencyName, string symbol)
         {
-            string query = "INSERT INTO Currencies (Code, Name, Symbol, IsActive) VALUES (@Code, @Name, @Symbol, 1)";
+            string query = "INSERT INTO Currencies (Code, Name, Symbol, IsActive) VALUES (@Code, @Name, @Symbol, GETDATE())";
             return ExecuteNonQuery(query, cmd =>
             {
                 cmd.Parameters.AddWithValue("@Code", currencyCode);
@@ -571,7 +813,7 @@ namespace PaymentDataLayer
 
         public static bool UpdateCurrency(string currencyCode, string currencyName, string symbol)
         {
-            string query = "UPDATE Currencies SET Name = @Name, Symbol = @Symbol WHERE Code = @Code";
+            string query = "UPDATE Currencies SET Name = @Name, Symbol = @Symbol, UpdatedAt = GETDATE() WHERE Code = @Code";
             return ExecuteNonQuery(query, cmd =>
             {
                 cmd.Parameters.AddWithValue("@Code", currencyCode);

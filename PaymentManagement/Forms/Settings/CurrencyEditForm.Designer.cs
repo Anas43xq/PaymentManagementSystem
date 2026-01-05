@@ -52,7 +52,7 @@ namespace PaymentManagement
             this.lblTitle.ForeColor = System.Drawing.Color.White;
             this.lblTitle.Location = new System.Drawing.Point(15, 13);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(168, 32);
+            this.lblTitle.Size = new System.Drawing.Size(140, 28);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Add Currency";
             // 
@@ -86,7 +86,7 @@ namespace PaymentManagement
             this.lblSymbol.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             this.lblSymbol.Location = new System.Drawing.Point(20, 130);
             this.lblSymbol.Name = "lblSymbol";
-            this.lblSymbol.Size = new System.Drawing.Size(73, 23);
+            this.lblSymbol.Size = new System.Drawing.Size(64, 20);
             this.lblSymbol.TabIndex = 4;
             this.lblSymbol.Text = "Symbol:";
             // 
@@ -104,7 +104,7 @@ namespace PaymentManagement
             this.lblName.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             this.lblName.Location = new System.Drawing.Point(20, 70);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(139, 23);
+            this.lblName.Size = new System.Drawing.Size(120, 20);
             this.lblName.TabIndex = 2;
             this.lblName.Text = "Currency Name:";
             // 
@@ -123,7 +123,7 @@ namespace PaymentManagement
             this.lblCode.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold);
             this.lblCode.Location = new System.Drawing.Point(20, 15);
             this.lblCode.Name = "lblCode";
-            this.lblCode.Size = new System.Drawing.Size(132, 23);
+            this.lblCode.Size = new System.Drawing.Size(114, 20);
             this.lblCode.TabIndex = 0;
             this.lblCode.Text = "Currency Code:";
             // 
@@ -138,6 +138,7 @@ namespace PaymentManagement
             this.panelButtons.Padding = new System.Windows.Forms.Padding(15);
             this.panelButtons.Size = new System.Drawing.Size(450, 60);
             this.panelButtons.TabIndex = 2;
+            this.panelButtons.Paint += new System.Windows.Forms.PaintEventHandler(this.panelButtons_Paint);
             // 
             // btnCancel
             // 

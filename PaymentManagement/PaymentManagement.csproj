@@ -13,7 +13,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>D:\Projects\Payment_Management\</PublishUrl>
+    <PublishUrl>C:\Users\Anas\Desktop\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -23,7 +23,6 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
@@ -76,10 +75,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\Auth\frmSignup.Painting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Auth\frmLogin.Painting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Reports\ReportForm.CustomPaint.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Helpers\CurrencyConverter.cs" />
+    <Compile Include="Helpers\CustomMonthCalendar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Helpers\ExcelHelper.cs" />
     <Compile Include="Helpers\UIHelper.cs" />
+    <Compile Include="Helpers\Session.cs" />
     <Compile Include="Themes\ThemeManager.cs" />
+    <Compile Include="Forms\Auth\frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Auth\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Auth\frmSignup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Auth\frmSignup.Designer.cs">
+      <DependentUpon>frmSignup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Base\BasePaymentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -142,6 +166,12 @@
     <Compile Include="Forms\Settings\CurrencyEditForm.Designer.cs">
       <DependentUpon>CurrencyEditForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Forms\Auth\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Base\BasePaymentForm.resx">
+      <DependentUpon>BasePaymentForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Payment\Entry\frmPaymentForm.resx">
       <DependentUpon>frmPaymentForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -150,6 +180,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Payment\List\OtherPaymentsForm.resx">
       <DependentUpon>OtherPaymentsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Settings\CurrencyEditForm.resx">
+      <DependentUpon>CurrencyEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

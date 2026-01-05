@@ -17,162 +17,253 @@
 
         private void InitializeComponent()
         {
+            this.panelHeader = new System.Windows.Forms.Panel();
+            this.lblFormTitle = new System.Windows.Forms.Label();
             this.panelMain = new System.Windows.Forms.Panel();
-            this.groupBoxPaymentDetails = new System.Windows.Forms.GroupBox();
-            this.cmbCurrency = new System.Windows.Forms.ComboBox();
-            this.cmbStatus = new System.Windows.Forms.ComboBox();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.cmbPaymentMethod = new System.Windows.Forms.ComboBox();
-            this.lblPaymentMethod = new System.Windows.Forms.Label();
-            this.dtpPaymentDate = new System.Windows.Forms.DateTimePicker();
-            this.lblPaymentDate = new System.Windows.Forms.Label();
-            this.lblCurrency = new System.Windows.Forms.Label();
-            this.txtAmount = new System.Windows.Forms.TextBox();
-            this.lblAmount = new System.Windows.Forms.Label();
-            this.groupBoxBasicInfo = new System.Windows.Forms.GroupBox();
-            this.cmbCategory = new System.Windows.Forms.ComboBox();
-            this.lblCategory = new System.Windows.Forms.Label();
+            this.panelContent = new System.Windows.Forms.Panel();
+            this.panelNotes = new System.Windows.Forms.Panel();
             this.txtNotes = new System.Windows.Forms.TextBox();
             this.lblNotes = new System.Windows.Forms.Label();
+            this.panelCategory = new System.Windows.Forms.Panel();
+            this.cmbCategory = new System.Windows.Forms.ComboBox();
+            this.lblCategory = new System.Windows.Forms.Label();
+            this.panelPaymentDate = new System.Windows.Forms.Panel();
+            this.dtpPaymentDate = new System.Windows.Forms.DateTimePicker();
+            this.lblPaymentDate = new System.Windows.Forms.Label();
+            this.panelCurrency = new System.Windows.Forms.Panel();
+            this.cmbCurrency = new System.Windows.Forms.ComboBox();
+            this.lblCurrency = new System.Windows.Forms.Label();
+            this.panelAmount = new System.Windows.Forms.Panel();
+            this.txtAmount = new System.Windows.Forms.TextBox();
+            this.lblAmount = new System.Windows.Forms.Label();
             this.panelButtons = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
+            this.panelHeader.SuspendLayout();
             this.panelMain.SuspendLayout();
-            this.groupBoxPaymentDetails.SuspendLayout();
-            this.groupBoxBasicInfo.SuspendLayout();
+            this.panelContent.SuspendLayout();
+            this.panelNotes.SuspendLayout();
+            this.panelCategory.SuspendLayout();
+            this.panelPaymentDate.SuspendLayout();
+            this.panelCurrency.SuspendLayout();
+            this.panelAmount.SuspendLayout();
             this.panelButtons.SuspendLayout();
             this.SuspendLayout();
             // 
+            // panelHeader
+            // 
+            this.panelHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.panelHeader.Controls.Add(this.lblFormTitle);
+            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelHeader.Location = new System.Drawing.Point(0, 0);
+            this.panelHeader.Name = "panelHeader";
+            this.panelHeader.Padding = new System.Windows.Forms.Padding(30, 20, 30, 20);
+            this.panelHeader.Size = new System.Drawing.Size(700, 80);
+            this.panelHeader.TabIndex = 0;
+            // 
+            // lblFormTitle
+            // 
+            this.lblFormTitle.AutoSize = true;
+            this.lblFormTitle.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lblFormTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblFormTitle.ForeColor = System.Drawing.Color.White;
+            this.lblFormTitle.Location = new System.Drawing.Point(30, 20);
+            this.lblFormTitle.Name = "lblFormTitle";
+            this.lblFormTitle.Size = new System.Drawing.Size(212, 41);
+            this.lblFormTitle.TabIndex = 0;
+            this.lblFormTitle.Text = "New Payment";
+            // 
             // panelMain
             // 
-            this.panelMain.Controls.Add(this.groupBoxPaymentDetails);
-            this.panelMain.Controls.Add(this.groupBoxBasicInfo);
+            this.panelMain.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
+            this.panelMain.Controls.Add(this.panelContent);
+            this.panelMain.Controls.Add(this.panelButtons);
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelMain.Location = new System.Drawing.Point(0, 0);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(4);
+            this.panelMain.Location = new System.Drawing.Point(0, 80);
             this.panelMain.Name = "panelMain";
-            this.panelMain.Padding = new System.Windows.Forms.Padding(27, 25, 27, 25);
-            this.panelMain.Size = new System.Drawing.Size(840, 623);
-            this.panelMain.TabIndex = 0;
+            this.panelMain.Padding = new System.Windows.Forms.Padding(30, 30, 30, 20);
+            this.panelMain.Size = new System.Drawing.Size(700, 570);
+            this.panelMain.TabIndex = 1;
             // 
-            // groupBoxPaymentDetails
+            // panelContent
             // 
-            this.groupBoxPaymentDetails.Controls.Add(this.cmbCurrency);
-            this.groupBoxPaymentDetails.Controls.Add(this.cmbStatus);
-            this.groupBoxPaymentDetails.Controls.Add(this.lblStatus);
-            this.groupBoxPaymentDetails.Controls.Add(this.cmbPaymentMethod);
-            this.groupBoxPaymentDetails.Controls.Add(this.lblPaymentMethod);
-            this.groupBoxPaymentDetails.Controls.Add(this.dtpPaymentDate);
-            this.groupBoxPaymentDetails.Controls.Add(this.lblPaymentDate);
-            this.groupBoxPaymentDetails.Controls.Add(this.lblCurrency);
-            this.groupBoxPaymentDetails.Controls.Add(this.txtAmount);
-            this.groupBoxPaymentDetails.Controls.Add(this.lblAmount);
-            this.groupBoxPaymentDetails.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBoxPaymentDetails.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxPaymentDetails.Location = new System.Drawing.Point(27, 25);
-            this.groupBoxPaymentDetails.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBoxPaymentDetails.Name = "groupBoxPaymentDetails";
-            this.groupBoxPaymentDetails.Padding = new System.Windows.Forms.Padding(20, 18, 20, 18);
-            this.groupBoxPaymentDetails.Size = new System.Drawing.Size(786, 273);
-            this.groupBoxPaymentDetails.TabIndex = 1;
-            this.groupBoxPaymentDetails.TabStop = false;
-            this.groupBoxPaymentDetails.Text = "Payment Details";
+            this.panelContent.BackColor = System.Drawing.Color.White;
+            this.panelContent.Controls.Add(this.panelNotes);
+            this.panelContent.Controls.Add(this.panelCategory);
+            this.panelContent.Controls.Add(this.panelPaymentDate);
+            this.panelContent.Controls.Add(this.panelCurrency);
+            this.panelContent.Controls.Add(this.panelAmount);
+            this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelContent.Location = new System.Drawing.Point(30, 30);
+            this.panelContent.Name = "panelContent";
+            this.panelContent.Padding = new System.Windows.Forms.Padding(40, 35, 40, 35);
+            this.panelContent.Size = new System.Drawing.Size(640, 450);
+            this.panelContent.TabIndex = 0;
             // 
-            // cmbCurrency
+            // panelNotes
             // 
-            this.cmbCurrency.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCurrency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbCurrency.FormattingEnabled = true;
-            this.cmbCurrency.Location = new System.Drawing.Point(200, 87);
-            this.cmbCurrency.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbCurrency.Name = "cmbCurrency";
-            this.cmbCurrency.Size = new System.Drawing.Size(134, 28);
-            this.cmbCurrency.TabIndex = 13;
-            this.cmbCurrency.SelectedIndexChanged += new System.EventHandler(this.cmbCurrency_SelectedIndexChanged);
+            this.panelNotes.Controls.Add(this.txtNotes);
+            this.panelNotes.Controls.Add(this.lblNotes);
+            this.panelNotes.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelNotes.Location = new System.Drawing.Point(40, 275);
+            this.panelNotes.Name = "panelNotes";
+            this.panelNotes.Padding = new System.Windows.Forms.Padding(0, 0, 0, 20);
+            this.panelNotes.Size = new System.Drawing.Size(560, 150);
+            this.panelNotes.TabIndex = 4;
             // 
-            // cmbStatus
+            // txtNotes
             // 
-            this.cmbStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbStatus.FormattingEnabled = true;
-            this.cmbStatus.Location = new System.Drawing.Point(200, 234);
-            this.cmbStatus.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbStatus.Name = "cmbStatus";
-            this.cmbStatus.Size = new System.Drawing.Size(265, 28);
-            this.cmbStatus.TabIndex = 11;
+            this.txtNotes.AcceptsReturn = true;
+            this.txtNotes.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtNotes.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtNotes.Location = new System.Drawing.Point(0, 31);
+            this.txtNotes.Multiline = true;
+            this.txtNotes.Name = "txtNotes";
+            this.txtNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtNotes.Size = new System.Drawing.Size(560, 99);
+            this.txtNotes.TabIndex = 1;
             // 
-            // lblStatus
+            // lblNotes
             // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(24, 238);
-            this.lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(62, 20);
-            this.lblStatus.TabIndex = 10;
-            this.lblStatus.Text = "Status:";
+            this.lblNotes.AutoSize = true;
+            this.lblNotes.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblNotes.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblNotes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblNotes.Location = new System.Drawing.Point(0, 0);
+            this.lblNotes.Name = "lblNotes";
+            this.lblNotes.Padding = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.lblNotes.Size = new System.Drawing.Size(56, 31);
+            this.lblNotes.TabIndex = 0;
+            this.lblNotes.Text = "Notes";
             // 
-            // cmbPaymentMethod
+            // panelCategory
             // 
-            this.cmbPaymentMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPaymentMethod.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbPaymentMethod.FormattingEnabled = true;
-            this.cmbPaymentMethod.Location = new System.Drawing.Point(200, 184);
-            this.cmbPaymentMethod.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbPaymentMethod.Name = "cmbPaymentMethod";
-            this.cmbPaymentMethod.Size = new System.Drawing.Size(265, 28);
-            this.cmbPaymentMethod.TabIndex = 9;
+            this.panelCategory.Controls.Add(this.cmbCategory);
+            this.panelCategory.Controls.Add(this.lblCategory);
+            this.panelCategory.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelCategory.Location = new System.Drawing.Point(40, 215);
+            this.panelCategory.Name = "panelCategory";
+            this.panelCategory.Padding = new System.Windows.Forms.Padding(0, 0, 0, 20);
+            this.panelCategory.Size = new System.Drawing.Size(560, 60);
+            this.panelCategory.TabIndex = 3;
             // 
-            // lblPaymentMethod
+            // cmbCategory
             // 
-            this.lblPaymentMethod.AutoSize = true;
-            this.lblPaymentMethod.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPaymentMethod.Location = new System.Drawing.Point(24, 188);
-            this.lblPaymentMethod.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblPaymentMethod.Name = "lblPaymentMethod";
-            this.lblPaymentMethod.Size = new System.Drawing.Size(139, 20);
-            this.lblPaymentMethod.TabIndex = 8;
-            this.lblPaymentMethod.Text = "Payment Method:";
+            this.cmbCategory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbCategory.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cmbCategory.FormattingEnabled = true;
+            this.cmbCategory.Location = new System.Drawing.Point(0, 31);
+            this.cmbCategory.Name = "cmbCategory";
+            this.cmbCategory.Size = new System.Drawing.Size(560, 31);
+            this.cmbCategory.TabIndex = 1;
+            // 
+            // lblCategory
+            // 
+            this.lblCategory.AutoSize = true;
+            this.lblCategory.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblCategory.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblCategory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblCategory.Location = new System.Drawing.Point(0, 0);
+            this.lblCategory.Name = "lblCategory";
+            this.lblCategory.Padding = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.lblCategory.Size = new System.Drawing.Size(84, 31);
+            this.lblCategory.TabIndex = 0;
+            this.lblCategory.Text = "Category";
+            // 
+            // panelPaymentDate
+            // 
+            this.panelPaymentDate.Controls.Add(this.dtpPaymentDate);
+            this.panelPaymentDate.Controls.Add(this.lblPaymentDate);
+            this.panelPaymentDate.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelPaymentDate.Location = new System.Drawing.Point(40, 155);
+            this.panelPaymentDate.Name = "panelPaymentDate";
+            this.panelPaymentDate.Padding = new System.Windows.Forms.Padding(0, 0, 0, 20);
+            this.panelPaymentDate.Size = new System.Drawing.Size(560, 60);
+            this.panelPaymentDate.TabIndex = 2;
             // 
             // dtpPaymentDate
             // 
-            this.dtpPaymentDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dtpPaymentDate.CalendarFont = new System.Drawing.Font("Segoe UI", 10F);
+            this.dtpPaymentDate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dtpPaymentDate.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.dtpPaymentDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpPaymentDate.Location = new System.Drawing.Point(200, 135);
-            this.dtpPaymentDate.Margin = new System.Windows.Forms.Padding(4);
+            this.dtpPaymentDate.Location = new System.Drawing.Point(0, 31);
             this.dtpPaymentDate.Name = "dtpPaymentDate";
-            this.dtpPaymentDate.Size = new System.Drawing.Size(265, 26);
-            this.dtpPaymentDate.TabIndex = 5;
+            this.dtpPaymentDate.Size = new System.Drawing.Size(560, 30);
+            this.dtpPaymentDate.TabIndex = 1;
             // 
             // lblPaymentDate
             // 
             this.lblPaymentDate.AutoSize = true;
-            this.lblPaymentDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPaymentDate.Location = new System.Drawing.Point(24, 139);
-            this.lblPaymentDate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblPaymentDate.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblPaymentDate.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblPaymentDate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblPaymentDate.Location = new System.Drawing.Point(0, 0);
             this.lblPaymentDate.Name = "lblPaymentDate";
-            this.lblPaymentDate.Size = new System.Drawing.Size(120, 20);
-            this.lblPaymentDate.TabIndex = 4;
-            this.lblPaymentDate.Text = "Payment Date:";
+            this.lblPaymentDate.Padding = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.lblPaymentDate.Size = new System.Drawing.Size(123, 31);
+            this.lblPaymentDate.TabIndex = 0;
+            this.lblPaymentDate.Text = "Payment Date";
+            // 
+            // panelCurrency
+            // 
+            this.panelCurrency.Controls.Add(this.cmbCurrency);
+            this.panelCurrency.Controls.Add(this.lblCurrency);
+            this.panelCurrency.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelCurrency.Location = new System.Drawing.Point(40, 95);
+            this.panelCurrency.Name = "panelCurrency";
+            this.panelCurrency.Padding = new System.Windows.Forms.Padding(0, 0, 0, 20);
+            this.panelCurrency.Size = new System.Drawing.Size(560, 60);
+            this.panelCurrency.TabIndex = 1;
+            // 
+            // cmbCurrency
+            // 
+            this.cmbCurrency.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbCurrency.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCurrency.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbCurrency.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cmbCurrency.FormattingEnabled = true;
+            this.cmbCurrency.Location = new System.Drawing.Point(0, 31);
+            this.cmbCurrency.Name = "cmbCurrency";
+            this.cmbCurrency.Size = new System.Drawing.Size(560, 31);
+            this.cmbCurrency.TabIndex = 1;
+            this.cmbCurrency.SelectedIndexChanged += new System.EventHandler(this.cmbCurrency_SelectedIndexChanged);
             // 
             // lblCurrency
             // 
             this.lblCurrency.AutoSize = true;
-            this.lblCurrency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCurrency.Location = new System.Drawing.Point(24, 90);
-            this.lblCurrency.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCurrency.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblCurrency.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblCurrency.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblCurrency.Location = new System.Drawing.Point(0, 0);
             this.lblCurrency.Name = "lblCurrency";
-            this.lblCurrency.Size = new System.Drawing.Size(82, 20);
-            this.lblCurrency.TabIndex = 2;
-            this.lblCurrency.Text = "Currency:";
+            this.lblCurrency.Padding = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.lblCurrency.Size = new System.Drawing.Size(81, 31);
+            this.lblCurrency.TabIndex = 0;
+            this.lblCurrency.Text = "Currency";
+            // 
+            // panelAmount
+            // 
+            this.panelAmount.Controls.Add(this.txtAmount);
+            this.panelAmount.Controls.Add(this.lblAmount);
+            this.panelAmount.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelAmount.Location = new System.Drawing.Point(40, 35);
+            this.panelAmount.Name = "panelAmount";
+            this.panelAmount.Padding = new System.Windows.Forms.Padding(0, 0, 0, 20);
+            this.panelAmount.Size = new System.Drawing.Size(560, 60);
+            this.panelAmount.TabIndex = 0;
             // 
             // txtAmount
             // 
-            this.txtAmount.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAmount.Location = new System.Drawing.Point(200, 37);
-            this.txtAmount.Margin = new System.Windows.Forms.Padding(4);
+            this.txtAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtAmount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtAmount.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtAmount.Location = new System.Drawing.Point(0, 31);
             this.txtAmount.Name = "txtAmount";
-            this.txtAmount.Size = new System.Drawing.Size(265, 26);
+            this.txtAmount.Size = new System.Drawing.Size(560, 30);
             this.txtAmount.TabIndex = 1;
             this.txtAmount.TextChanged += new System.EventHandler(this.txtAmount_TextChanged);
             this.txtAmount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtAmount_KeyPress);
@@ -180,100 +271,38 @@
             // lblAmount
             // 
             this.lblAmount.AutoSize = true;
-            this.lblAmount.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAmount.Location = new System.Drawing.Point(24, 41);
-            this.lblAmount.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblAmount.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblAmount.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblAmount.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblAmount.Location = new System.Drawing.Point(0, 0);
             this.lblAmount.Name = "lblAmount";
-            this.lblAmount.Size = new System.Drawing.Size(97, 20);
+            this.lblAmount.Padding = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.lblAmount.Size = new System.Drawing.Size(75, 31);
             this.lblAmount.TabIndex = 0;
-            this.lblAmount.Text = "Amount ($):";
-            // 
-            // groupBoxBasicInfo
-            // 
-            this.groupBoxBasicInfo.Controls.Add(this.cmbCategory);
-            this.groupBoxBasicInfo.Controls.Add(this.lblCategory);
-            this.groupBoxBasicInfo.Controls.Add(this.txtNotes);
-            this.groupBoxBasicInfo.Controls.Add(this.lblNotes);
-            this.groupBoxBasicInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBoxBasicInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxBasicInfo.Location = new System.Drawing.Point(27, 299);
-            this.groupBoxBasicInfo.Margin = new System.Windows.Forms.Padding(4);
-            this.groupBoxBasicInfo.Name = "groupBoxBasicInfo";
-            this.groupBoxBasicInfo.Padding = new System.Windows.Forms.Padding(20, 18, 20, 18);
-            this.groupBoxBasicInfo.Size = new System.Drawing.Size(786, 299);
-            this.groupBoxBasicInfo.TabIndex = 0;
-            this.groupBoxBasicInfo.TabStop = false;
-            this.groupBoxBasicInfo.Text = "Basic Information";
-            // 
-            // cmbCategory
-            // 
-            this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCategory.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbCategory.FormattingEnabled = true;
-            this.cmbCategory.Location = new System.Drawing.Point(200, 23);
-            this.cmbCategory.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbCategory.Name = "cmbCategory";
-            this.cmbCategory.Size = new System.Drawing.Size(265, 28);
-            this.cmbCategory.TabIndex = 7;
-            // 
-            // lblCategory
-            // 
-            this.lblCategory.AutoSize = true;
-            this.lblCategory.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCategory.Location = new System.Drawing.Point(24, 27);
-            this.lblCategory.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCategory.Name = "lblCategory";
-            this.lblCategory.Size = new System.Drawing.Size(81, 20);
-            this.lblCategory.TabIndex = 6;
-            this.lblCategory.Text = "Category:";
-            // 
-            // txtNotes
-            // 
-            this.txtNotes.AcceptsReturn = true;
-            this.txtNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtNotes.Location = new System.Drawing.Point(200, 72);
-            this.txtNotes.Margin = new System.Windows.Forms.Padding(4);
-            this.txtNotes.Multiline = true;
-            this.txtNotes.Name = "txtNotes";
-            this.txtNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNotes.Size = new System.Drawing.Size(492, 147);
-            this.txtNotes.TabIndex = 5;
-            // 
-            // lblNotes
-            // 
-            this.lblNotes.AutoSize = true;
-            this.lblNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotes.Location = new System.Drawing.Point(24, 75);
-            this.lblNotes.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblNotes.Name = "lblNotes";
-            this.lblNotes.Size = new System.Drawing.Size(58, 20);
-            this.lblNotes.TabIndex = 4;
-            this.lblNotes.Text = "Notes:";
+            this.lblAmount.Text = "Amount";
             // 
             // panelButtons
             // 
             this.panelButtons.Controls.Add(this.btnCancel);
             this.panelButtons.Controls.Add(this.btnSave);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelButtons.Location = new System.Drawing.Point(0, 623);
-            this.panelButtons.Margin = new System.Windows.Forms.Padding(4);
+            this.panelButtons.Location = new System.Drawing.Point(30, 480);
             this.panelButtons.Name = "panelButtons";
-            this.panelButtons.Padding = new System.Windows.Forms.Padding(27, 12, 27, 25);
-            this.panelButtons.Size = new System.Drawing.Size(840, 68);
+            this.panelButtons.Size = new System.Drawing.Size(640, 70);
             this.panelButtons.TabIndex = 1;
             // 
             // btnCancel
             // 
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnCancel.BackColor = System.Drawing.Color.White;
+            this.btnCancel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatAppearance.BorderSize = 0;
+            this.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(195)))), ((int)(((byte)(199)))));
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCancel.ForeColor = System.Drawing.Color.White;
-            this.btnCancel.Location = new System.Drawing.Point(632, 18);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnCancel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.btnCancel.Location = new System.Drawing.Point(380, 15);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(120, 43);
+            this.btnCancel.Size = new System.Drawing.Size(120, 45);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = false;
@@ -281,15 +310,15 @@
             // 
             // btnSave
             // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSave.FlatAppearance.BorderSize = 0;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(504, 18);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSave.Location = new System.Drawing.Point(520, 15);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(120, 43);
+            this.btnSave.Size = new System.Drawing.Size(120, 45);
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = false;
@@ -301,11 +330,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(840, 691);
+            this.ClientSize = new System.Drawing.Size(700, 650);
             this.Controls.Add(this.panelMain);
-            this.Controls.Add(this.panelButtons);
+            this.Controls.Add(this.panelHeader);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmPaymentForm";
@@ -313,11 +341,20 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Payment Form";
             this.Load += new System.EventHandler(this.PaymentForm_Load);
+            this.panelHeader.ResumeLayout(false);
+            this.panelHeader.PerformLayout();
             this.panelMain.ResumeLayout(false);
-            this.groupBoxPaymentDetails.ResumeLayout(false);
-            this.groupBoxPaymentDetails.PerformLayout();
-            this.groupBoxBasicInfo.ResumeLayout(false);
-            this.groupBoxBasicInfo.PerformLayout();
+            this.panelContent.ResumeLayout(false);
+            this.panelNotes.ResumeLayout(false);
+            this.panelNotes.PerformLayout();
+            this.panelCategory.ResumeLayout(false);
+            this.panelCategory.PerformLayout();
+            this.panelPaymentDate.ResumeLayout(false);
+            this.panelPaymentDate.PerformLayout();
+            this.panelCurrency.ResumeLayout(false);
+            this.panelCurrency.PerformLayout();
+            this.panelAmount.ResumeLayout(false);
+            this.panelAmount.PerformLayout();
             this.panelButtons.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -325,25 +362,27 @@
 
         #endregion
 
+        private System.Windows.Forms.Panel panelHeader;
+        private System.Windows.Forms.Label lblFormTitle;
         private System.Windows.Forms.Panel panelMain;
+        private System.Windows.Forms.Panel panelContent;
+        private System.Windows.Forms.Panel panelAmount;
+        private System.Windows.Forms.TextBox txtAmount;
+        private System.Windows.Forms.Label lblAmount;
+        private System.Windows.Forms.Panel panelCurrency;
+        private System.Windows.Forms.ComboBox cmbCurrency;
+        private System.Windows.Forms.Label lblCurrency;
+        private System.Windows.Forms.Panel panelPaymentDate;
+        private System.Windows.Forms.DateTimePicker dtpPaymentDate;
+        private System.Windows.Forms.Label lblPaymentDate;
+        private System.Windows.Forms.Panel panelCategory;
+        private System.Windows.Forms.ComboBox cmbCategory;
+        private System.Windows.Forms.Label lblCategory;
+        private System.Windows.Forms.Panel panelNotes;
+        private System.Windows.Forms.TextBox txtNotes;
+        private System.Windows.Forms.Label lblNotes;
         private System.Windows.Forms.Panel panelButtons;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.GroupBox groupBoxPaymentDetails;
-        private System.Windows.Forms.ComboBox cmbCurrency;
-        private System.Windows.Forms.ComboBox cmbStatus;
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.ComboBox cmbPaymentMethod;
-        private System.Windows.Forms.Label lblPaymentMethod;
-        private System.Windows.Forms.DateTimePicker dtpPaymentDate;
-        private System.Windows.Forms.Label lblPaymentDate;
-        private System.Windows.Forms.Label lblCurrency;
-        private System.Windows.Forms.TextBox txtAmount;
-        private System.Windows.Forms.Label lblAmount;
-        private System.Windows.Forms.GroupBox groupBoxBasicInfo;
-        private System.Windows.Forms.ComboBox cmbCategory;
-        private System.Windows.Forms.Label lblCategory;
-        private System.Windows.Forms.TextBox txtNotes;
-        private System.Windows.Forms.Label lblNotes;
     }
 }

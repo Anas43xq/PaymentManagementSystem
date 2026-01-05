@@ -16,26 +16,26 @@ namespace clsPaymentEntities
         public DateTime TransactionDate { get; set; }
         public string Notes { get; set; }
 
-        // Foreign keys - Fixed: Should be int, not string
+
         public int CategoryID { get; set; }
         public int CurrencyID { get; set; }
 
-        // Display properties (loaded from related tables)
+        public int UserID { get; set; }
+
+
         public string CategoryName { get; set; }
-        public string CategoryType { get; set; } // Income or Expense
+        public string CategoryType { get; set; } 
         public string CurrencyCode { get; set; }
         public string CurrencySymbol { get; set; }
 
-        // Calculated property for display
         public string FormattedAmount
         {
             get { return CurrencySymbol + Amount.ToString("N2"); }
         }
 
-        // Audit fields
+
         public DateTime CreatedAt { get; set; }
 
-        // Constructor
         public ClsPayment()
         {
             Mode = enMode.AddNew;
@@ -48,10 +48,10 @@ namespace clsPaymentEntities
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public string Type { get; set; } // "Income" or "Expense"
+        public string Type { get; set; } 
         public bool IsActive { get; set; } = true;
 
-        // For display in ComboBox
+
         public override string ToString()
         {
             return Name;
@@ -61,14 +61,14 @@ namespace clsPaymentEntities
     public class ClsCurrency
     {
         public int ID { get; set; }
-        public string Code { get; set; }        // USD, LBP, AED
-        public string Name { get; set; }        // US Dollar, Lebanese Pound, UAE Dirham
-        public string Symbol { get; set; }      // $, €, د.إ
+        public string Code { get; set; }       
+        public string Name { get; set; }      
+        public string Symbol { get; set; }     
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
 
-        // For display in ComboBox
+
         public string DisplayText
         {
             get { return $"{Code} ({Symbol})"; }
@@ -80,7 +80,7 @@ namespace clsPaymentEntities
         }
     }
 
-    // Summary class for reports
+
     public class ClsPaymentSummary
     {
         public string CategoryName { get; set; }
@@ -95,7 +95,7 @@ namespace clsPaymentEntities
         }
     }
 
-    // Monthly summary class
+
     public class ClsMonthlySummary
     {
         public int Year { get; set; }

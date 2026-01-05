@@ -1,0 +1,1 @@
+cd "d:\Documents\Study\C#\PaymentManagementSystem\PaymentDataLayer\tools\GeneratePasswordHash"; powershell -ExecutionPolicy Bypass -File "GenerateAdminHash.ps1"

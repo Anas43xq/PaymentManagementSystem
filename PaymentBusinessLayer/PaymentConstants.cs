@@ -19,9 +19,7 @@ namespace PaymentBusinessLayer
             public const string Bus = "BUS";
             public const string Exam = "EXAM";
 
-            /// <summary>
-            /// Gets all university category names
-            /// </summary>
+  
             public static string[] GetAll() => new[]
             {
                 Registration,

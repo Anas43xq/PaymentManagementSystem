@@ -1,4 +1,5 @@
 using PaymentBusinessLayer;
+using PaymentManagement.Helpers;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -16,6 +17,14 @@ namespace PaymentManagement
 
         protected virtual void BasePaymentForm_Load(object sender, EventArgs e)
         {
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in. Please login first.", "Authentication Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+                return;
+            }
+
             ThemeManager.ApplyTheme(this);
             UIHelper.StyleTotalLabels(lblTotalLBP, lblTotalAED, lblTotalUSD);
             SetupDGV();
@@ -52,33 +61,7 @@ namespace PaymentManagement
 
         protected virtual void WireUpEventHandlers()
         {
-            if (dgvPayments != null)
-                dgvPayments.SelectionChanged += DgvPayments_SelectionChanged;
-            
-            if (btnAdd != null)
-                btnAdd.Click += btnAdd_Click;
-            if (btnEdit != null)
-                btnEdit.Click += btnEdit_Click;
-            if (btnDelete != null)
-                btnDelete.Click += btnDelete_Click;
-            if (btnRefresh != null)
-                btnRefresh.Click += btnRefresh_Click;
-            if (btnClearFilter != null)
-                btnClearFilter.Click += btnClearFilter_Click;
-            if (btnCombine != null)
-                btnCombine.Click += btnCombine_Click;
-            if (btnTheme != null)
-                btnTheme.Click += btnTheme_Click;
-            if (btnExport != null)
-                btnExport.Click += btnExport_Click;
-            if (btnImport != null)
-                btnImport.Click += btnImport_Click;
-            
-            if (DPPurposeFilter != null)
-                DPPurposeFilter.ValueChanged += DPPurposeFilter_ValueChanged;
-            if (cmbPurposeFilter != null)
-                cmbPurposeFilter.SelectedIndexChanged += CmbPurposeFilter_SelectedIndexChanged;
-            
+
             if (editToolStripMenuItem != null)
                 editToolStripMenuItem.Click += btnEdit_Click;
             if (deleteToolStripMenuItem != null)
@@ -90,16 +73,23 @@ namespace PaymentManagement
         protected virtual void LoadData(string specificCategory = "")
         {
             if (dgvPayments == null) return;
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0) return;
 
-            dgvPayments.DataSource = UIHelper.LoadData(pageContext, specificCategory);
+            dgvPayments.DataSource = UIHelper.LoadData(pageContext, Session.CurrentUser.ID, specificCategory);
 
             if (dgvPayments.Columns.Contains("Amount"))
                 dgvPayments.Columns["Amount"].Visible = false;
+
+            if(dgvPayments.Columns.Contains("UserID"))
+                dgvPayments.Columns["UserID"].Visible = false;
+
         }
 
         protected virtual void UpdateTotals(string specificCategory = "")
         {
-            UIHelper.UpdateTotals(pageContext, lblTotalLBP, lblTotalAED, lblTotalUSD, specificCategory);
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0) return;
+
+            UIHelper.UpdateTotals(pageContext, Session.CurrentUser.ID, lblTotalLBP, lblTotalAED, lblTotalUSD, specificCategory);
         }
 
         protected virtual void RefreshData(string specificCategory = "")
@@ -110,17 +100,35 @@ namespace PaymentManagement
 
         protected virtual void btnAdd_Click(object sender, EventArgs e)
         {
-            UIHelper.btnAdd_Click(pageContext, dgvPayments, lblTotalLBP, lblTotalAED, lblTotalUSD);
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            UIHelper.btnAdd_Click(pageContext, Session.CurrentUser.ID, dgvPayments, lblTotalLBP, lblTotalAED, lblTotalUSD);
         }
 
         protected virtual void btnEdit_Click(object sender, EventArgs e)
         {
-            UIHelper.btnEdit_Click(pageContext, dgvPayments, lblTotalLBP, lblTotalAED, lblTotalUSD);
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            UIHelper.btnEdit_Click(pageContext, Session.CurrentUser.ID, dgvPayments, lblTotalLBP, lblTotalAED, lblTotalUSD);
         }
 
         protected virtual void btnDelete_Click(object sender, EventArgs e)
         {
-            UIHelper.btnDelete_Click(pageContext, dgvPayments, lblTotalLBP, lblTotalAED, lblTotalUSD);
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            UIHelper.btnDelete_Click(pageContext, Session.CurrentUser.ID, dgvPayments, lblTotalLBP, lblTotalAED, lblTotalUSD);
         }
 
         protected virtual void btnRefresh_Click(object sender, EventArgs e)
@@ -145,7 +153,13 @@ namespace PaymentManagement
 
         protected virtual void btnCombine_Click(object sender, EventArgs e)
         {
-            UIHelper.CombineTransactions(dgvPayments);
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            UIHelper.CombineTransactions(dgvPayments, Session.CurrentUser.ID);
             RefreshData();
         }
 
@@ -169,7 +183,13 @@ namespace PaymentManagement
 
         protected virtual void btnImport_Click(object sender, EventArgs e)
         {
-            int importedCount = ExcelHelper.ImportTransactions();
+            if (Session.CurrentUser == null || Session.CurrentUser.ID <= 0)
+            {
+                MessageBox.Show("No user is logged in.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int importedCount = ExcelHelper.ImportTransactions(Session.CurrentUser.ID);
             if (importedCount > 0)
             {
                 RefreshData();
@@ -197,20 +217,10 @@ namespace PaymentManagement
 
         protected virtual void DPPurposeFilter_ValueChanged(object sender, EventArgs e)
         {
-            if (DPPurposeFilter != null && dgvPayments != null)
+            if (DPPurposeFilter != null && dgvPayments != null && Session.CurrentUser != null)
             {
-                UIHelper.DatePickerFilter(DPPurposeFilter, dgvPayments);
+                UIHelper.DatePickerFilter(DPPurposeFilter, dgvPayments, Session.CurrentUser.ID);
             }
-        }
-
-        protected virtual void editToolSMI_Click(object sender, EventArgs e)
-        {
-            btnEdit_Click(sender, e);
-        }
-
-        protected virtual void deleteToolSMI_Click(object sender, EventArgs e)
-        {
-            btnDelete_Click(sender, e);
         }
     }
 }

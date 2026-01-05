@@ -13,9 +13,6 @@ namespace PaymentManagement
             { "AED", 3.67m }
         };
 
-        /// <summary>
-        /// Converts an amount from one currency to USD
-        /// </summary>
         public static decimal ConvertToUSD(decimal amount, string fromCurrency)
         {
             if (string.IsNullOrWhiteSpace(fromCurrency))
@@ -32,9 +29,6 @@ namespace PaymentManagement
             return amount / ExchangeRates[fromCurrency];
         }
 
-        /// <summary>
-        /// Converts an amount from USD to another currency
-        /// </summary>
         public static decimal ConvertFromUSD(decimal amountInUSD, string toCurrency)
         {
             if (string.IsNullOrWhiteSpace(toCurrency))
@@ -51,18 +45,13 @@ namespace PaymentManagement
             return amountInUSD * ExchangeRates[toCurrency];
         }
 
-        /// <summary>
-        /// Converts between any two currencies
-        /// </summary>
         public static decimal Convert(decimal amount, string fromCurrency, string toCurrency)
         {
             decimal amountInUSD = ConvertToUSD(amount, fromCurrency);
             return ConvertFromUSD(amountInUSD, toCurrency);
         }
 
-        /// <summary>
-        /// Gets the exchange rate for a currency relative to USD
-        /// </summary>
+
         public static decimal GetRate(string currency)
         {
             if (string.IsNullOrWhiteSpace(currency))
@@ -73,9 +62,6 @@ namespace PaymentManagement
             return ExchangeRates.ContainsKey(currency) ? ExchangeRates[currency] : 1.0m;
         }
 
-        /// <summary>
-        /// Updates exchange rate for a currency
-        /// </summary>
         public static void UpdateRate(string currency, decimal rate)
         {
             if (string.IsNullOrWhiteSpace(currency) || rate <= 0)

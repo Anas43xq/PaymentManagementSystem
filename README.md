@@ -81,7 +81,7 @@ The application follows a **three-tier architecture**:
 │   - Service Methods                      │
 └──────────────┬──────────────────────────┘
                │
-┌──────────────▼──────────────────────────┐
+┌──────────────▼───────────────────────────┐
 │   Data Access Layer                      │
 │   (PaymentDataLayer)                     │
 │   - Database Operations                  │
@@ -89,8 +89,8 @@ The application follows a **three-tier architecture**:
 │   - Connection Management                │
 └──────────────┬──────────────────────────┘
                │
-┌──────────────▼──────────────────────────┐
-│   Entity Layer (clsPaymentEntities)     │
+┌──────────────▼───────────────────────────┐
+│   Entity Layer (clsPaymentEntities)      │
 │   - Data Models                          │
 │   - Domain Objects                       │
 └──────────────────────────────────────────┘
